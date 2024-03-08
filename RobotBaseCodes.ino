@@ -45,6 +45,16 @@ const byte right_front = 51;
 const int TRIG_PIN = 48;
 const int ECHO_PIN = 49;
 
+//Default IR sensor pins, these pins are defined by the Shield
+#define IR_41_01 13
+#define IR_41_02 14
+#define IR_21_01 15
+#define IR_21_02 16
+//uncomment if these IR sensors are used
+// #define IR_21_03 15
+// #define IR_21_04 16
+
+
 // Anything over 400 cm (23200 us pulse) is "out of range". Hit:If you decrease to this the ranging sensor but the timeout is short, you may not need to read up to 4meters.
 const unsigned int MAX_DIST = 23200;
 
@@ -401,6 +411,52 @@ void read_serial_command()
   }
 
 }
+
+//----------------------Sensor Reading & conversion to mm-------------------------
+
+float IR_sensorReadDistance(string sensor) 
+// input can be : "41_01", "04_02", "02_01", "02_02", "02_03", "02_04",
+// return distance in mm
+{
+  float distance;
+  int sensor_value;
+  if (sensor == "41_01")
+  {
+    sensor_value = analogRead(IR_41_01);
+    distance = 27592 * pow(x, -1.018);
+  }
+  else if (sensor == "04_02")
+  {
+    sensor_value = analogRead(IR_41_02);
+    distance = 7935.4 * pow(x, -0.827);
+  }
+  else if(sensor == "02_01")
+  {
+    sensor_value = analogRead(IR_21_01);
+    distance = 1888777 * pow(x, -1.237);
+  }
+  else if(sensor == "02_02")
+  {
+    sensor_value = analogRead(IR_21_02);
+    distance = 92838 * pow(x, -1.097);
+  }
+  else if(sensor = "02_03")
+  {
+    sensor_value = analogRead(IR_21_03);
+    distance = 7927.4 * pow(x, -0.687);
+  }
+  else if(sensor = "02_04")
+  {
+    sensor_value = analogRead(IR_21_04);
+    distance = 50857 * pow(x, -0.994);
+  }
+  else
+  {
+    serialCom->println("Invalid sensor");
+    distance = 0;
+  }
+  return distance;
+} 
 
 //----------------------Motor moments------------------------
 //The Vex Motor Controller 29 use Servo Control signals to determine speed and direction, with 0 degrees meaning neutral https://en.wikipedia.org/wiki/Servo_control
