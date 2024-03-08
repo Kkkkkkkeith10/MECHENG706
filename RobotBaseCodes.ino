@@ -20,6 +20,7 @@
   Author: Logan Stuart
 */
 #include <Servo.h>  //Need for Servo pulse output
+#include <SoftwareSerial.h>
 
 //#define NO_READ_GYRO  //Uncomment of GYRO is not attached.
 //#define NO_HC-SR04 //Uncomment of HC-SR04 ultrasonic ranging sensor is not attached.
@@ -31,6 +32,11 @@ enum STATE {
   RUNNING,
   STOPPED
 };
+
+
+#define BLUETOOTH_RX 10
+// Serial Data output pin
+#define BLUETOOTH_TX 11
 
 //Refer to Shield Pinouts.jpg for pin locations
 
@@ -46,13 +52,14 @@ const int TRIG_PIN = 48;
 const int ECHO_PIN = 49;
 
 //Default IR sensor pins, these pins are defined by the Shield
-#define IR_41_01 13
-#define IR_41_02 14
-#define IR_21_01 15
-#define IR_21_02 16
+#define IR_41_01 12
+#define IR_41_02 13
+#define IR_41_03 13
+//#define IR_2Y_01 14
+#define IR_2Y_02 14
 //uncomment if these IR sensors are used
-// #define IR_21_03 15
-// #define IR_21_04 16
+// #define IR_2Y_03 14
+ #define IR_2Y_04 15
 
 
 // Anything over 400 cm (23200 us pulse) is "out of range". Hit:If you decrease to this the ranging sensor but the timeout is short, you may not need to read up to 4meters.
@@ -85,6 +92,8 @@ void setup(void)
   SerialCom = &Serial;
   SerialCom->begin(115200);
   SerialCom->println("MECHENG706_Base_Code_25/01/2018");
+
+  
   delay(1000);
   SerialCom->println("Setup....");
 
@@ -94,26 +103,30 @@ void setup(void)
 
 void loop(void) //main loop
 {
-  static STATE machine_state = INITIALISING;
-  //Finite-state machine Code
-  switch (machine_state) {
-    case INITIALISING:
-      machine_state = initialising();
-      break;
-    case RUNNING: //Lipo Battery Volage OK
-      machine_state =  running();
-      break;
-    case STOPPED: //Stop of Lipo Battery voltage is too low, to protect Battery
-      machine_state =  stopped();
-      break;
-  };
+  // static STATE machine_state = INITIALISING;
+  // //Finite-state machine Code
+  // switch (machine_state) {
+  //   case INITIALISING:
+  //     machine_state = initialising();
+  //     break;
+  //   case RUNNING: //Lipo Battery Volage OK
+  //     machine_state =  running();
+  //     break;
+  //   case STOPPED: //Stop of Lipo Battery voltage is too low, to protect Battery
+  //     machine_state =  stopped();
+  //     break;
+  // };
+  
+  SerialCom->println(IR_sensorReadDistance("41_03"));
+
+  delay(1000);
 }
 
 
 STATE initialising() {
   //initialising
   SerialCom->println("INITIALISING....");
-  delay(1000); //One second delay to see the serial string "INITIALISING...."
+  delay(1000); //One second delay to see the serial String "INITIALISING...."
   SerialCom->println("Enabling Motors...");
   enable_motors();
   SerialCom->println("RUNNING STATE...");
@@ -414,52 +427,57 @@ void read_serial_command()
 
 //----------------------Sensor Reading & conversion to mm-------------------------
 
-float IR_sensorReadDistance(string sensor) 
+double IR_sensorReadDistance(String sensor) 
 // input can be : "41_01", "04_02", "02_01", "02_02", "02_03", "02_04",
 // return distance in mm
 {
-  float distance;
-  int sensor_value;
+  double distance;
+  double sensor_value;
   if (sensor == "41_01")
   {
     sensor_value = analogRead(IR_41_01);
-    distance = 27592 * pow(x, -1.018);
+    distance = 27592 * pow(sensor_value, -1.018);
   }
-  else if (sensor == "04_02")
+  else if (sensor == "41_02")
   {
     sensor_value = analogRead(IR_41_02);
-    distance = 7935.4 * pow(x, -0.827);
+    distance = 7935.4 * pow(sensor_value, -0.827);
   }
-  else if(sensor == "02_01")
+  else if (sensor == "41_03")
   {
-    sensor_value = analogRead(IR_21_01);
-    distance = 1888777 * pow(x, -1.237);
+    sensor_value = analogRead(IR_41_03);
+    distance = 30119 * pow(sensor_value, -1.039);
   }
-  else if(sensor == "02_02")
+  // else if(sensor == "2Y_01")
+  // {
+  //   sensor_value = analogRead(IR_2Y_01);
+  //   distance = 1888777 * pow(sensor_value, -1.237);
+  // }
+  else if(sensor == "2Y_02")
   {
-    sensor_value = analogRead(IR_21_02);
-    distance = 92838 * pow(x, -1.097);
+    sensor_value = analogRead(IR_2Y_02);
+    distance = 92838 * pow(sensor_value, -1.097);
   }
-  else if(sensor = "02_03")
+  // else if(sensor = "2Y_03")
+  // {
+  //   sensor_value = analogRead(IR_2Y_03);
+  //   distance = 7927.4 * pow(sensor_value, -0.687);
+  // }
+  else if(sensor = "2Y_04")
   {
-    sensor_value = analogRead(IR_21_03);
-    distance = 7927.4 * pow(x, -0.687);
-  }
-  else if(sensor = "02_04")
-  {
-    sensor_value = analogRead(IR_21_04);
-    distance = 50857 * pow(x, -0.994);
+    sensor_value = analogRead(IR_2Y_04);
+    distance = 50857 * pow(sensor_value, -0.994);
   }
   else
   {
-    serialCom->println("Invalid sensor");
+    SerialCom->println("Invalid sensor");
     distance = 0;
   }
   return distance;
 } 
 
 //-------------------------------Car Movement-----------------------------------
-void Car_Move(string left_front_IR, string left_back_IR, string right_front_IR, string right_back_IR ){
+void Car_Move(String left_front_IR, String left_back_IR, String right_front_IR, String right_back_IR ){
   float torlance  = 3; //mm
 
   float left_front_distance = IR_sensorReadDistance(left_front_IR);
