@@ -458,6 +458,28 @@ float IR_sensorReadDistance(string sensor)
   return distance;
 } 
 
+//-------------------------------Car Movement-----------------------------------
+void Car_Move(string left_front_IR, string left_back_IR, string right_front_IR, string right_back_IR ){
+  float torlance  = 3; //mm
+
+  float left_front_distance = IR_sensorReadDistance(left_front_IR);
+  float left_back_distance = IR_sensorReadDistance(left_back_IR);
+  float right_front_distance = IR_sensorReadDistance(right_front_IR);
+  float right_back_distance = IR_sensorReadDistance(right_back_IR);
+
+  //demo only, only work with left sensor
+  //need to be modified after logic of car movement is determined
+  if(left_front_distance - left_back_distance > torlance){
+    ccw();
+  }
+  else if(left_back_distance - left_front_distance > torlance){
+    cw();
+  }
+  else{
+    forward();
+  }
+}
+
 //----------------------Motor moments------------------------
 //The Vex Motor Controller 29 use Servo Control signals to determine speed and direction, with 0 degrees meaning neutral https://en.wikipedia.org/wiki/Servo_control
 
