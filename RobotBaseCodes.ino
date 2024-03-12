@@ -38,6 +38,8 @@ enum STATE
 // Serial Data output pin
 #define BLUETOOTH_TX 11
 
+SoftwareSerial BluetoothSerial(BLUETOOTH_RX, BLUETOOTH_TX);
+
 // Refer to Shield Pinouts.jpg for pin locations
 
 // Default motor control pins
@@ -69,7 +71,7 @@ Servo right_rear_motor; // create servo object to control Vex Motor Controller 2
 Servo right_font_motor; // create servo object to control Vex Motor Controller 29
 Servo turret_motor;
 
-int speed_val = 100;
+int speed_val = 300;
 int speed_change;
 
 // gyro
@@ -87,6 +89,9 @@ float currentAngle = 0; // current angle calculated by angular velocity integral
 HardwareSerial *SerialCom;
 
 int pos = 0;
+
+  int i;
+  float sum = 0;
 void setup(void)
 {
   turret_motor.attach(11);
@@ -101,13 +106,66 @@ void setup(void)
   SerialCom->begin(115200);
   SerialCom->println("MECHENG706_Base_Code_25/01/2018");
 
+  BluetoothSerial.begin(115200);
+
+
   delay(1000);
   SerialCom->println("Setup....");
 
-  // setting up gyro
-  int i;
-  float sum = 0;
-  pinMode(sensorPin, INPUT);
+  // // setting up gyro
+
+  // pinMode(sensorPin, INPUT);
+  // Serial.println("please keep the sensor still for calibration");
+  // Serial.println("get the gyro zero voltage");
+  // for (i = 0; i < 100; i++) // read 100 values of voltage when gyro is at still, to calculate the zero-drift
+  // {
+  //   sensorValue = analogRead(sensorPin);
+  //   sum += sensorValue;
+  //   delay(5);
+  // }
+  // gyroZeroVoltage = sum / 100; // average the sum as the zero drifting
+
+  delay(1000); // settling time but no really needed
+}
+
+void loop(void) // main loop
+{
+  static STATE machine_state = INITIALISING;
+  //Finite-state machine Code
+  switch (machine_state) {
+    case INITIALISING:
+      machine_state = initialising();
+      break;
+    case RUNNING: //Lipo Battery Volage OK
+      //machine_state =  running();
+      //SerialCom->println(String(currentAngle));
+      //SerialCom->print(String(currentAngle));
+      //SerialCom->print("\n");
+      
+
+      driveStrightWithGyro(6000);
+      delay(5);
+      break;
+    case STOPPED: //Stop of Lipo Battery voltage is too low, to protect Battery
+      machine_state =  stopped();
+      break;
+  };
+
+}
+
+STATE initialising()
+{
+  // initialising
+  SerialCom->println("INITIALISING....");
+  //delay(1000); // One second delay to see the serial String "INITIALISING...."
+  SerialCom->println("Enabling Motors...");
+  enable_motors();
+  SerialCom->println("RUNNING STATE...");
+
+// setting up gyro
+  //int i;
+  //float sum = 0;
+  // pinMode(sensorPin, INPUT);
   Serial.println("please keep the sensor still for calibration");
   Serial.println("get the gyro zero voltage");
   for (i = 0; i < 100; i++) // read 100 values of voltage when gyro is at still, to calculate the zero-drift
@@ -118,38 +176,10 @@ void setup(void)
   }
   gyroZeroVoltage = sum / 100; // average the sum as the zero drifting
 
-  delay(1000); // settling time but no really needed
-}
 
-void loop(void) // main loop
-{
-  // static STATE machine_state = INITIALISING;
-  // //Finite-state machine Code
-  // switch (machine_state) {
-  //   case INITIALISING:
-  //     machine_state = initialising();
-  //     break;
-  //   case RUNNING: //Lipo Battery Volage OK
-  //     machine_state =  running();
-  //     break;
-  //   case STOPPED: //Stop of Lipo Battery voltage is too low, to protect Battery
-  //     machine_state =  stopped();
-  //     break;
-  // };
 
-  SerialCom->println(IR_sensorReadDistance("41_03"));
 
-  delay(1000);
-}
 
-STATE initialising()
-{
-  // initialising
-  SerialCom->println("INITIALISING....");
-  delay(1000); // One second delay to see the serial String "INITIALISING...."
-  SerialCom->println("Enabling Motors...");
-  enable_motors();
-  SerialCom->println("RUNNING STATE...");
   return RUNNING;
 }
 
@@ -623,6 +653,7 @@ void strafe_right()
 
 void readGyro()
 {
+  int T = 50;
   gyroRate = (analogRead(sensorPin) * gyroSupplyVoltage) / 1023;
   // find the voltage offset the value of voltage when gyro is zero (still)
   gyroRate -= (gyroZeroVoltage / 1023 * 5);
@@ -647,28 +678,72 @@ void readGyro()
 }
 
 void driveStrightWithGyro(int millsecond)
-{
-  float target = readGyro();
-  float torlance = 3; // degree
+{ 
+  readGyro();
+  float target =  currentAngle;
+  float torlance = 50; // degree
+  float directionMinus = 0;
+  float directionPlus = 0;
   unsigned long timeAtDestination = millis() + millsecond;
 
   while (millis() < timeAtDestination)
   {
     readGyro();
-    if (currentAngle > target + torlance)
+
+    if((abs(currentAngle) < torlance) ||(abs(currentAngle) > (360-torlance)))
     {
-      // turn left
-      ccw();
+      forward();
     }
-    else if (currentAngle < target - torlance)
+    else if(currentAngle > torlance)
     {
-      // turn right
       cw();
     }
     else
     {
-      // go stright
-      forward();
+      ccw();
     }
+
+    readGyro();
+    delay(200);
+
+    // if((target - torlance)<0){
+    //   directionMinus = target - torlance +360;
+    // }
+
+    // if(( target + torlance) >360){
+    //   directionPlus = target + torlance -360;
+    // }
+
+    // SerialCom->println("Current Angle");
+    // SerialCom->print(currentAngle);
+    // SerialCom->print("Target");   
+
+    // SerialCom->print(target); 
+    //     SerialCom->print("directionPlus");
+    // SerialCom->print(directionPlus);
+    // SerialCom->print("directionMinus");    
+    // SerialCom->print(directionMinus);
+
+    
+    // if (currentAngle > directionPlus)
+    // {
+    //   // turn left
+    //   SerialCom->println("ccw");
+    //   ccw();
+    // }
+    // else if (currentAngle < directionMinus)
+    // {
+    //   // turn right
+    //   SerialCom->println("cw");
+    //   cw();
+    // }
+    // else
+    // {
+    //   // go stright
+    //   SerialCom->println("forward");
+    //   forward();
+    // }
+
+    // delay(200);
   }
 }
