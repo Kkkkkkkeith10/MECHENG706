@@ -34,6 +34,8 @@ enum STATE
   STOPPED
 };
 
+int currentState = 0;
+
 #define BLUETOOTH_RX 10
 // Serial Data output pin
 #define BLUETOOTH_TX 11
@@ -142,9 +144,11 @@ void loop(void) // main loop
       //SerialCom->print(String(currentAngle));
       //SerialCom->print("\n");
       
-
-      driveStrightWithGyro(6000);
-      delay(5);
+      // HC_SR04_range();
+      // driveStrightWithGyro(6000);
+      // delay(5);
+      stateMachine(currentState);
+      
       break;
     case STOPPED: //Stop of Lipo Battery voltage is too low, to protect Battery
       machine_state =  stopped();
@@ -178,7 +182,7 @@ STATE initialising()
 
 
 
-
+  currentState = 1;
 
   return RUNNING;
 }
@@ -356,7 +360,7 @@ boolean is_battery_voltage_OK()
 #endif
 
 #ifndef NO_HC - SR04
-void HC_SR04_range()
+float HC_SR04_range()
 {
   unsigned long t1;
   unsigned long t2;
@@ -410,12 +414,15 @@ void HC_SR04_range()
   if (pulse_width > MAX_DIST)
   {
     SerialCom->println("HC-SR04: Out of range");
+    cm = 0;
+    return cm;
   }
   else
   {
     SerialCom->print("HC-SR04:");
     SerialCom->print(cm);
     SerialCom->println("cm");
+    return cm;
   }
 }
 #endif
@@ -658,7 +665,7 @@ void readGyro()
   // find the voltage offset the value of voltage when gyro is zero (still)
   gyroRate -= (gyroZeroVoltage / 1023 * 5);
   // read out voltage divided the gyro sensitivity to calculate the angular velocity
-  float angularVelocity = gyroRate / gyroSensitivity;
+  float angularVelocity = gyroRate/2 / gyroSensitivity;
   // if the angular velocity is less than the threshold, ignore it
   if (angularVelocity >= rotationThreshold || angularVelocity <= -rotationThreshold)
   {
@@ -667,83 +674,99 @@ void readGyro()
     currentAngle += angleChange;
   }
   // keep the angle between 0-360
-  if (currentAngle < 0)
-  {
-    currentAngle += 360;
-  }
-  else if (currentAngle > 359)
-  {
-    currentAngle -= 360;
-  }
+  // if (currentAngle < 0)
+  // {
+  //   currentAngle += 360;
+  // }
+  // else if (currentAngle > 359)
+  // {
+  //   currentAngle -= 360;
+  // }
 }
 
-void driveStrightWithGyro(int millsecond)
+void driveStrightWithGyro()
 { 
   readGyro();
   float target =  currentAngle;
-  float torlance = 50; // degree
+  float torlance = 10; // degree
   float directionMinus = 0;
   float directionPlus = 0;
-  unsigned long timeAtDestination = millis() + millsecond;
+  
 
-  while (millis() < timeAtDestination)
+  while (HC_SR04_range() >15)
   {
     readGyro();
 
-    if((abs(currentAngle) < torlance) ||(abs(currentAngle) > (360-torlance)))
+    if((abs(currentAngle) < (torlance + target) ) ||(abs(currentAngle) > (-torlance+target)))
     {
-      forward();
+      reverse();
     }
-    else if(currentAngle > torlance)
+    else if((currentAngle > (torlance+target)) && (currentAngle <(180+target))
+    )
+    {
+      ccw();
+    }
+    else
     {
       cw();
     }
-    else
+
+    readGyro();
+    delay(50);
+  }
+  currentState = 2;
+  stop();
+
+}
+
+void turnByGyroAngle(float turnAngle){
+  readGyro();
+  float target =  currentAngle + turnAngle ;
+  float torlance = 5; // degree
+  float directionMinus = 0;
+  float directionPlus = 0;
+  
+
+  while ((currentAngle> (target +torlance) ) || (currentAngle< (target -torlance) ) )
+  {
+    readGyro();
+    SerialCom->println("currentAngle");
+    SerialCom->println(currentAngle);
+    SerialCom->println("target");
+    SerialCom->println(target);
+    if((abs(currentAngle) < (torlance + target) ) ||(abs(currentAngle) > (-torlance+target)))
+    {
+      cw();
+    }
+    else 
     {
       ccw();
     }
 
+
     readGyro();
-    delay(200);
+    delay(50);
+    SerialCom->println("Turnig");
+  }
+  currentState = 3;
+  stop();
 
-    // if((target - torlance)<0){
-    //   directionMinus = target - torlance +360;
-    // }
+}
 
-    // if(( target + torlance) >360){
-    //   directionPlus = target + torlance -360;
-    // }
 
-    // SerialCom->println("Current Angle");
-    // SerialCom->print(currentAngle);
-    // SerialCom->print("Target");   
-
-    // SerialCom->print(target); 
-    //     SerialCom->print("directionPlus");
-    // SerialCom->print(directionPlus);
-    // SerialCom->print("directionMinus");    
-    // SerialCom->print(directionMinus);
-
-    
-    // if (currentAngle > directionPlus)
-    // {
-    //   // turn left
-    //   SerialCom->println("ccw");
-    //   ccw();
-    // }
-    // else if (currentAngle < directionMinus)
-    // {
-    //   // turn right
-    //   SerialCom->println("cw");
-    //   cw();
-    // }
-    // else
-    // {
-    //   // go stright
-    //   SerialCom->println("forward");
-    //   forward();
-    // }
-
-    // delay(200);
+void stateMachine(int adress){
+  switch(adress){
+    case 1: 
+      driveStrightWithGyro();
+      SerialCom->println("1");
+    break;
+    case 2:
+      turnByGyroAngle(90);
+      SerialCom->println("2");
+      break;
+    case 3:
+      driveStrightWithGyro();
+      SerialCom->println("3");
+      break;
   }
 }
