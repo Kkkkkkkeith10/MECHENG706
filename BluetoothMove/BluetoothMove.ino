@@ -61,7 +61,6 @@ float currentAngle = 0; // current angle calculated by angular velocity integral
 
 //proto functions
 void enable_motors();
-void read_serial_command();
 void readGyro();
 void strafe_right();
 void strafe_left();
@@ -84,16 +83,16 @@ void setup(void)
 
 
   //initilizae bluetooth comms
-  BluetoothSerial.begin(115200);
-  BluetoothSerial.println("MECHENG706_Drive_With_Bluetooth");
+  //BluetoothSerial.begin(115200);
+  //BluetoothSerial.print("MECHENG706_Drive_With_Bluetooth\n");
 
   delay(5);
 
   // setting up gyro
 
   pinMode(sensorPin, INPUT);
-  Serial.println("please keep the sensor still for calibration");
-  Serial.println("get the gyro zero voltage");
+  // Serial.println("please keep the sensor still for calibration");
+  // Serial.println("get the gyro zero voltage");
   for (i = 0; i < 100; i++) // read 100 values of voltage when gyro is at still, to calculate the zero-drift
   {
     sensorValue = analogRead(sensorPin);
@@ -111,32 +110,18 @@ void setup(void)
 
 void loop(void) // main loop
 {
+  int time = 0; 
+  time =  millis();
+  //bluetooth_read();
+  // if  (time > 100)
+  // {
+  //   data = readGryo();
+  //   BluetoothSerial.write(data);
+  // }
+  delay(1);
 
 }
 
-
-
-
-void fast_flash_double_LED_builtin()
-{
-  static byte indexer = 0;
-  static unsigned long fast_flash_millis;
-  if (millis() > fast_flash_millis)
-  {
-    indexer++;
-    if (indexer > 4)
-    {
-      fast_flash_millis = millis() + 700;
-      digitalWrite(LED_BUILTIN, LOW);
-      indexer = 0;
-    }
-    else
-    {
-      fast_flash_millis = millis() + 100;
-      digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-    }
-  }
-}
 
 
 
