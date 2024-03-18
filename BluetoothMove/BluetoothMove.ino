@@ -59,6 +59,7 @@ float rotationThreshold = 1.5; // because of gyro drifting, defining rotation an
 // this value will not be ignored
 float gyroRate = 0;     // read out value of sensor in voltage
 float currentAngle = 0; // current angle calculated by angular velocity integral on
+float send_period = 0; //used for controlling sampling rate
 
 //proto functions
 void enable_motors();
@@ -85,6 +86,7 @@ void setup(void)
 
   //initilizae bluetooth comms
   BluetoothSerial.begin(115200);
+  Serial.begin(115200);
 
   // setting up gyro
   pinMode(sensorPin, INPUT);
@@ -109,6 +111,19 @@ void loop(void) // main loop
 
   char command = 't';
 
+    readGyro();
+  send_period = millis();
+  if (send_period > 10000) //only send every 200ms
+  {
+    send_period = 0;
+    char message[8];
+    dtostrf(currentAngle,6,2,message);
+    //BluetoothSerial.println(message);
+    Serial.println(message);
+    // Serial.print(" : ");
+    // Serial.println(time);
+  }
+
 
   if (BluetoothSerial.available() > 0)
   {
@@ -117,10 +132,7 @@ void loop(void) // main loop
     interpret_command(command);
 
   }
-
-  readGyro();
-  BluetoothSerial.println(currentAngle);
-
+  
 }
 
 
