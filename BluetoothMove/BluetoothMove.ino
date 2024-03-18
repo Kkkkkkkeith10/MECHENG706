@@ -62,7 +62,7 @@ float currentAngle = 0; // current angle calculated by angular velocity integral
 
 //proto functions
 void enable_motors();
-// void readGyro();
+void readGyro();
 void strafe_right();
 void strafe_left();
 void stop();
@@ -113,10 +113,14 @@ void loop(void) // main loop
   if (BluetoothSerial.available() > 0)
   {
     command = BluetoothSerial.read();
-    BluetoothSerial.write(command);
+    BluetoothSerial.println(command);
     interpret_command(command);
 
   }
+
+  readGyro();
+  BluetoothSerial.println(currentAngle);
+
 }
 
 
