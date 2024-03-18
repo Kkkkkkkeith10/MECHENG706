@@ -40,11 +40,11 @@ const byte right_rear = 50;
 const byte right_front = 51;
 
 
-// Servo left_font_motor;  // create servo object to control Vex Motor Controller 29
-// Servo left_rear_motor;  // create servo object to control Vex Motor Controller 29
-// Servo right_rear_motor; // create servo object to control Vex Motor Controller 29
-// Servo right_font_motor; // create servo object to control Vex Motor Controller 29
-// Servo turret_motor;
+Servo left_font_motor;  // create servo object to control Vex Motor Controller 29
+Servo left_rear_motor;  // create servo object to control Vex Motor Controller 29
+Servo right_rear_motor; // create servo object to control Vex Motor Controller 29
+Servo right_font_motor; // create servo object to control Vex Motor Controller 29
+Servo turret_motor;
 
 int speed_val = 300;
 int speed_change;
@@ -61,16 +61,16 @@ float gyroRate = 0;     // read out value of sensor in voltage
 float currentAngle = 0; // current angle calculated by angular velocity integral on
 
 //proto functions
-// void enable_motors();
+void enable_motors();
 // void readGyro();
-// void strafe_right();
-// void strafe_left();
-// void stop();
-// void forward();
-// void reverse();
-// void ccw();
-// void cw();
-//void read_bluetooth();
+void strafe_right();
+void strafe_left();
+void stop();
+void forward();
+void reverse();
+void ccw();
+void cw();
+void interpret_command(char command);
 
 
 
@@ -83,30 +83,22 @@ void setup(void)
   // turret_motor.attach(11);
   pinMode(LED_BUILTIN, OUTPUT);
 
-
   //initilizae bluetooth comms
   BluetoothSerial.begin(115200);
-  // BluetoothSerial.print("MECHENG706_Drive_With_Bluetooth\n");
-
-  delay(5);
 
   // setting up gyro
-
   pinMode(sensorPin, INPUT);
-  // BluetoothSerial.write("please keep the sensor still for calibration\n");
-  // BluetoothSerial.write("get the gyro zero voltage\n");
-  // for (i = 0; i < 100; i++) // read 100 values of voltage when gyro is at still, to calculate the zero-drift
-  // {
-  //   sensorValue = analogRead(sensorPin);
-  //   sum += sensorValue;
-  //   delay(5);
-  // }
-  // gyroZeroVoltage = sum / 100; // average the sum as the zero drifting
+  for (i = 0; i < 100; i++) // read 100 values of voltage when gyro is at still, to calculate the zero-drift
+  {
+    sensorValue = analogRead(sensorPin);
+    sum += sensorValue;
+    delay(5);
+  }
+  gyroZeroVoltage = sum / 100; // average the sum as the zero drifting
+
+  enable_motors(); //does what it says on the can
 
   delay(10); // settling time but no really needed
-
-  // enable_motors(); //does what it says on the can
-
 
 }
 
@@ -115,180 +107,171 @@ void loop(void) // main loop
   delay(LOOP_DELAY);
   delay(SAMPLE_DELAY);
 
+  char command = 't';
 
 
   if (BluetoothSerial.available() > 0)
   {
-    BluetoothSerial.write(BluetoothSerial.read());
+    command = BluetoothSerial.read();
+    BluetoothSerial.write(command);
+    interpret_command(command);
+
   }
 }
 
 
 
 
-// // Serial command pasing
-// void bluetooth_read()
-// {
-//   if (BluetoothSerial.available() > 1)
-//   {
-//     char val = BluetoothSerial.read();
-
-//     // Perform an action depending on the command
-//     switch (val)
-//     {
-//     case 'w': // Move Forward
-//     case 'W':
-//       forward();
-//       //SerialCom->println("Forward");
-//       break;
-//     case 's': // Move Backwards
-//     case 'S':
-//       reverse();
-//       //SerialCom->println("Backwards");
-//       break;
-//     case 'q': // Turn Left
-//     case 'Q':
-//       strafe_left();
-//       //SerialCom->println("Strafe Left");
-//       break;
-//     case 'e': // Turn Right
-//     case 'E':
-//       strafe_right();
-//       //SerialCom->println("Strafe Right");
-//       break;
-//     case 'a': // Turn Right
-//     case 'A':
-//       ccw();
-//       //SerialCom->println("ccw");
-//       break;
-//     case 'd': // Turn Right
-//     case 'D':
-//       cw();
-//       //SerialCom->println("cw");
-//       break;
-//     case '-': // Turn Right
-//     case '_':
-//       speed_change = -100;
-//       //SerialCom->println("-100");
-//       break;
-//     case '=':
-//     case '+':
-//       speed_change = 100;
-//       //SerialCom->println("+");
-//       break;
-//     default:
-//       stop();
-//       //SerialCom->println("stop");
-//       break;
-//     }
-//   }
-// }
+// Serial command pasing
+void interpret_command(char command)
+{
+    // Perform an action depending on the command
+    switch (command)
+    {
+    case 'w': // Move Forward
+    case 'W':
+      forward();
+      break;
+    case 's': // Move Backwards
+    case 'S':
+      reverse();
+      break;
+    case 'q': // Turn Left
+    case 'Q':
+      strafe_left();
+      break;
+    case 'e': // Turn Right
+    case 'E':
+      strafe_right();
+      break;
+    case 'a': // Turn Right
+    case 'A':
+      ccw();
+      break;
+    case 'd': // Turn Right
+    case 'D':
+      cw();
+      break;
+    case '-': // Turn Right
+    case '_':
+      speed_change = -100;
+      break;
+    case '=':
+    case '+':
+      speed_change = 100;
+      break;
+    default:
+      stop();
+      //SerialCom->println("stop");
+      break;
+    }
+}
 
 
 
 //----------------------Motor moments------------------------
 // The Vex Motor Controller 29 use Servo Control signals to determine speed and direction, with 0 degrees meaning neutral https://en.wikipedia.org/wiki/Servo_control
 
-// void disable_motors()
-// {
-//   left_font_motor.detach();  // detach the servo on pin left_front to turn Vex Motor Controller 29 Off
-//   left_rear_motor.detach();  // detach the servo on pin left_rear to turn Vex Motor Controller 29 Off
-//   right_rear_motor.detach(); // detach the servo on pin right_rear to turn Vex Motor Controller 29 Off
-//   right_font_motor.detach(); // detach the servo on pin right_front to turn Vex Motor Controller 29 Off
+void disable_motors()
+{
+  left_font_motor.detach();  // detach the servo on pin left_front to turn Vex Motor Controller 29 Off
+  left_rear_motor.detach();  // detach the servo on pin left_rear to turn Vex Motor Controller 29 Off
+  right_rear_motor.detach(); // detach the servo on pin right_rear to turn Vex Motor Controller 29 Off
+  right_font_motor.detach(); // detach the servo on pin right_front to turn Vex Motor Controller 29 Off
 
-//   pinMode(left_front, INPUT);
-//   pinMode(left_rear, INPUT);
-//   pinMode(right_rear, INPUT);
-//   pinMode(right_front, INPUT);
-// }
+  pinMode(left_front, INPUT);
+  pinMode(left_rear, INPUT);
+  pinMode(right_rear, INPUT);
+  pinMode(right_front, INPUT);
+}
 
-// void enable_motors()
-// {
-//   left_font_motor.attach(left_front);   // attaches the servo on pin left_front to turn Vex Motor Controller 29 On
-//   left_rear_motor.attach(left_rear);    // attaches the servo on pin left_rear to turn Vex Motor Controller 29 On
-//   right_rear_motor.attach(right_rear);  // attaches the servo on pin right_rear to turn Vex Motor Controller 29 On
-//   right_font_motor.attach(right_front); // attaches the servo on pin right_front to turn Vex Motor Controller 29 On
-// }
-// void stop() // Stop
-// {
-//   left_font_motor.writeMicroseconds(1500);
-//   left_rear_motor.writeMicroseconds(1500);
-//   right_rear_motor.writeMicroseconds(1500);
-//   right_font_motor.writeMicroseconds(1500);
-// }
+void enable_motors()
+{
+  left_font_motor.attach(left_front);   // attaches the servo on pin left_front to turn Vex Motor Controller 29 On
+  left_rear_motor.attach(left_rear);    // attaches the servo on pin left_rear to turn Vex Motor Controller 29 On
+  right_rear_motor.attach(right_rear);  // attaches the servo on pin right_rear to turn Vex Motor Controller 29 On
+  right_font_motor.attach(right_front); // attaches the servo on pin right_front to turn Vex Motor Controller 29 On
+}
+void stop() // Stop
+{
+  left_font_motor.writeMicroseconds(1500);
+  left_rear_motor.writeMicroseconds(1500);
+  right_rear_motor.writeMicroseconds(1500);
+  right_font_motor.writeMicroseconds(1500);
+}
 
-// void forward()
-// {
-//   left_font_motor.writeMicroseconds(1500 + speed_val);
-//   left_rear_motor.writeMicroseconds(1500 + speed_val);
-//   right_rear_motor.writeMicroseconds(1500 - speed_val);
-//   right_font_motor.writeMicroseconds(1500 - speed_val);
-// }
+void forward()
+{
+  left_font_motor.writeMicroseconds(1500 + speed_val);
+  left_rear_motor.writeMicroseconds(1500 + speed_val);
+  right_rear_motor.writeMicroseconds(1500 - speed_val);
+  right_font_motor.writeMicroseconds(1500 - speed_val);
+}
 
-// void reverse()
-// {
-//   left_font_motor.writeMicroseconds(1500 - speed_val);
-//   left_rear_motor.writeMicroseconds(1500 - speed_val);
-//   right_rear_motor.writeMicroseconds(1500 + speed_val);
-//   right_font_motor.writeMicroseconds(1500 + speed_val);
-// }
+void reverse()
+{
+  left_font_motor.writeMicroseconds(1500 - speed_val);
+  left_rear_motor.writeMicroseconds(1500 - speed_val);
+  right_rear_motor.writeMicroseconds(1500 + speed_val);
+  right_font_motor.writeMicroseconds(1500 + speed_val);
+}
 
-// void ccw()
-// {
-//   left_font_motor.writeMicroseconds(1500 - speed_val);
-//   left_rear_motor.writeMicroseconds(1500 - speed_val);
-//   right_rear_motor.writeMicroseconds(1500 - speed_val);
-//   right_font_motor.writeMicroseconds(1500 - speed_val);
-// }
+void ccw()
+{
+  left_font_motor.writeMicroseconds(1500 - speed_val);
+  left_rear_motor.writeMicroseconds(1500 - speed_val);
+  right_rear_motor.writeMicroseconds(1500 - speed_val);
+  right_font_motor.writeMicroseconds(1500 - speed_val);
+}
 
-// void cw()
-// {
-//   left_font_motor.writeMicroseconds(1500 + speed_val);
-//   left_rear_motor.writeMicroseconds(1500 + speed_val);
-//   right_rear_motor.writeMicroseconds(1500 + speed_val);
-//   right_font_motor.writeMicroseconds(1500 + speed_val);
-// }
+void cw()
+{
+  left_font_motor.writeMicroseconds(1500 + speed_val);
+  left_rear_motor.writeMicroseconds(1500 + speed_val);
+  right_rear_motor.writeMicroseconds(1500 + speed_val);
+  right_font_motor.writeMicroseconds(1500 + speed_val);
+}
 
-// void strafe_left()
-// {
-//   left_font_motor.writeMicroseconds(1500 - speed_val);
-//   left_rear_motor.writeMicroseconds(1500 + speed_val);
-//   right_rear_motor.writeMicroseconds(1500 + speed_val);
-//   right_font_motor.writeMicroseconds(1500 - speed_val);
-// }
+void strafe_left()
+{
+  left_font_motor.writeMicroseconds(1500 - speed_val);
+  left_rear_motor.writeMicroseconds(1500 + speed_val);
+  right_rear_motor.writeMicroseconds(1500 + speed_val);
+  right_font_motor.writeMicroseconds(1500 - speed_val);
+}
 
-// void strafe_right()
-// {
-//   left_font_motor.writeMicroseconds(1500 + speed_val);
-//   left_rear_motor.writeMicroseconds(1500 - speed_val);
-//   right_rear_motor.writeMicroseconds(1500 - speed_val);
-//   right_font_motor.writeMicroseconds(1500 + speed_val);
-// }
+void strafe_right()
+{
+  left_font_motor.writeMicroseconds(1500 + speed_val);
+  left_rear_motor.writeMicroseconds(1500 - speed_val);
+  right_rear_motor.writeMicroseconds(1500 - speed_val);
+  right_font_motor.writeMicroseconds(1500 + speed_val);
+}
 
-// void readGyro()
-// {
-//   int T = 50;
-//   gyroRate = (analogRead(sensorPin) * gyroSupplyVoltage) / 1023;
-//   // find the voltage offset the value of voltage when gyro is zero (still)
-//   gyroRate -= (gyroZeroVoltage / 1023 * 5);
-//   // read out voltage divided the gyro sensitivity to calculate the angular velocity
-//   float angularVelocity = gyroRate / gyroSensitivity;
+void readGyro()
+{
+  int T = 50;
+  gyroRate = (analogRead(sensorPin) * gyroSupplyVoltage) / 1023;
+  // find the voltage offset the value of voltage when gyro is zero (still)
+  gyroRate -= (gyroZeroVoltage / 1023 * 5);
+  // read out voltage divided the gyro sensitivity to calculate the angular velocity
+  float angularVelocity = gyroRate / gyroSensitivity;
 
-//   // if the angular velocity is less than the threshold, ignore it
-//   if (angularVelocity >= rotationThreshold || angularVelocity <= -rotationThreshold)
-//   {
-//     // we are running a loop in T. one second will run (1000/T).
-//     float angleChange = angularVelocity / (1000 / T);
-//     currentAngle += angleChange;
-//   }
-//   // keep the angle between 0-360
-//   if (currentAngle < 0)
-//   {
-//     currentAngle += 360;
-//   }
-//   else if (currentAngle > 359)
-//   {
-//     currentAngle -= 360;
-//   }
-// }
+  // if the angular velocity is less than the threshold, ignore it
+  if (angularVelocity >= rotationThreshold || angularVelocity <= -rotationThreshold)
+  {
+    // we are running a loop in T. one second will run (1000/T).
+    float angleChange = angularVelocity / (1000 / T);
+    currentAngle += angleChange;
+  }
+  // keep the angle between 0-360
+  if (currentAngle < 0)
+  {
+    currentAngle += 360;
+  }
+  else if (currentAngle > 359)
+  {
+    currentAngle -= 360;
+  }
+}
 
