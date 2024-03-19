@@ -722,7 +722,7 @@ int SVRR = 0;
 int SVLF = 0;
 int SVLR = 0;
 
-int Kp = 200;
+int Kp = 800;
 int SV_P = 0;
 
 float TargetAngle_Radius = 0.0;
@@ -738,10 +738,10 @@ void MoveStraightAlongAngle(float TargetAngle_Degree, float Power)
 
   TargetAngle_Radius = 2*3.1415926*TargetAngle_Degree/360;
 
-  SVLF = -SVLF*((sin(TargetAngle_Radius)-cos(TargetAngle_Radius))/sqrt(2));
-  SVLR = SVLR*((cos(TargetAngle_Radius)-sin(TargetAngle_Radius))/sqrt(2));
-  SVRR = SVRR*((sin(TargetAngle_Radius)-cos(TargetAngle_Radius))/sqrt(2));
-  SVRF = -SVRF*((cos(TargetAngle_Radius)-sin(TargetAngle_Radius))/sqrt(2));
+  SVLF = -SVLF*((cos(TargetAngle_Radius-sin(TargetAngle_Radius))));
+  SVLR = -SVLR*((cos(TargetAngle_Radius)+sin(TargetAngle_Radius)));
+  SVRR = SVRR*((cos(TargetAngle_Radius-sin(TargetAngle_Radius))));
+  SVRF = SVRF*((cos(TargetAngle_Radius)+sin(TargetAngle_Radius)));
   
   readGyro1();
   ErrorAngle_Radius = TargetAngle_Radius - 2*3.1415926*currentAngle/360;
