@@ -73,7 +73,7 @@ Servo right_rear_motor; // create servo object to control Vex Motor Controller 2
 Servo right_font_motor; // create servo object to control Vex Motor Controller 29
 Servo turret_motor;
 
-int speed_val = 300;
+int speed_val = 500;
 int speed_change;
 
 // gyro
@@ -665,13 +665,13 @@ void readGyro()
   // find the voltage offset the value of voltage when gyro is zero (still)
   gyroRate -= (gyroZeroVoltage / 1023 * 5);
   // read out voltage divided the gyro sensitivity to calculate the angular velocity
-  float angularVelocity = gyroRate/2 / gyroSensitivity;
+  float angularVelocity = gyroRate / gyroSensitivity;
   // if the angular velocity is less than the threshold, ignore it
   if (angularVelocity >= rotationThreshold || angularVelocity <= -rotationThreshold)
   {
     // we are running a loop in T. one second will run (1000/T).
     float angleChange = angularVelocity / (1000 / T);
-    currentAngle += angleChange;
+    currentAngle += (angleChange*0.92) + 0.1;
   }
   // keep the angle between 0-360
   // if (currentAngle < 0)
@@ -688,7 +688,7 @@ void driveStrightWithGyro()
 { 
   readGyro();
   float target =  currentAngle;
-  float torlance = 10; // degree
+  float torlance = 3; // degree
   float directionMinus = 0;
   float directionPlus = 0;
   
@@ -711,7 +711,7 @@ void driveStrightWithGyro()
       cw();
     }
 
-    readGyro();
+   
     delay(50);
   }
   currentState = 2;
@@ -744,7 +744,6 @@ void turnByGyroAngle(float turnAngle){
     }
 
 
-    readGyro();
     delay(50);
     SerialCom->println("Turnig");
   }
