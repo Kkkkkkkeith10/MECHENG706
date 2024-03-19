@@ -1,4 +1,3 @@
-
 /*
   MechEng 706 Base Code
 
@@ -129,6 +128,10 @@ void setup(void)
   delay(1000); // settling time but no really needed
 }
 
+
+int timeTarget = 0;
+int timeCurrent = 0;
+
 void loop(void) // main loop
 {
   static STATE machine_state = INITIALISING;
@@ -150,11 +153,56 @@ void loop(void) // main loop
 
 
 
-
-      while(true)
+      timeCurrent = millis();
+      timeTarget = timeCurrent + 2000;
+      while(timeCurrent<timeTarget)
+      {
+        MoveStraightAlongAngle(0, 100);
+        timeCurrent = millis();
+      }
+      timeTarget = timeCurrent + 2000;
+      while(timeCurrent<timeTarget)
+      {
+        MoveStraightAlongAngle(45, 100);
+        timeCurrent = millis();
+      }
+      timeTarget = timeCurrent + 2000;
+      while(timeCurrent<timeTarget)
       {
         MoveStraightAlongAngle(90, 100);
+        timeCurrent = millis() ;
       }
+      timeTarget = timeCurrent + 2000;
+      while(timeCurrent<timeTarget)
+      {
+        MoveStraightAlongAngle(135, 100);
+        timeCurrent = millis();
+      }
+      timeTarget = timeCurrent + 2000;
+      while(timeCurrent<timeTarget)
+      {
+        MoveStraightAlongAngle(180, 100);
+        timeCurrent = millis();
+      }
+      timeTarget = timeCurrent + 2000;
+      while(timeCurrent<timeTarget)
+      {
+        MoveStraightAlongAngle(215, 100);
+        timeCurrent = millis();
+      }
+      timeTarget = timeCurrent + 2000;
+      while(timeCurrent<timeTarget)
+      {
+        MoveStraightAlongAngle(270, 100);
+        timeCurrent = millis();
+      }
+      timeTarget = timeCurrent + 2000;
+      while(timeCurrent<timeTarget)
+      {
+        MoveStraightAlongAngle(315, 100);
+        timeCurrent = millis();
+      }
+      
       
       
 
@@ -723,7 +771,7 @@ int SVRR = 0;
 int SVLF = 0;
 int SVLR = 0;
 
-int Kp = 0;
+int Kp = 1000;
 int SV_P = 0;
 
 float TargetAngle_Radius = 0.0;
@@ -746,7 +794,7 @@ void MoveStraightAlongAngle(float TargetAngle_Degree, float Power)
   SVLR = -SVLR*(cos(TargetAngle_Radius)+sin(TargetAngle_Radius));
 
   readGyro1();
-  ErrorAngle_Radius = TargetAngle_Radius - 2*3.1415926*currentAngle/360;
+  ErrorAngle_Radius = TargetAngle_Radius - (2*3.1415926*currentAngle/360 + TargetAngle_Radius);
   SV_P = -Kp*ErrorAngle_Radius;
 
   SVRF += SV_P;
@@ -759,24 +807,26 @@ void MoveStraightAlongAngle(float TargetAngle_Degree, float Power)
   SVLF = saturation(SVLF);
   SVLR = saturation(SVLR);
 
-  left_font_motor.writeMicroseconds(1500 + SVLR);
-  left_rear_motor.writeMicroseconds(1500 + SVLF);
+  left_font_motor.writeMicroseconds(1500 + SVLF);
+  left_rear_motor.writeMicroseconds(1500 + SVLR);
   right_rear_motor.writeMicroseconds(1500 + SVRR);
   right_font_motor.writeMicroseconds(1500 + SVRF);
 
-  Serial.print(currentAngle);
-  Serial.print(" ");
-  //Serial.print(TargetAngle_Radius);
-  //Serial.print(" ");
-  Serial.print(SV_P);
-  Serial.print(" ");
-  Serial.print(SVRR);
-  Serial.print(" ");
-  Serial.print(SVRF);
-  Serial.print(" ");
-  Serial.print(SVLF);
-  Serial.print(" ");
-  Serial.println(SVLR);
+  // Serial.print(currentAngle);
+  // Serial.print(" ");
+  // Serial.print(TargetAngle_Radius);
+  // Serial.print(" ");
+  // Serial.print(ErrorAngle_Radius);
+  // Serial.print(" ");
+  // Serial.print(SV_P);
+  // Serial.print(" ");
+  // Serial.print(SVRR);
+  // Serial.print(" ");
+  // Serial.print(SVRF);
+  // Serial.print(" ");
+  // Serial.print(SVLF);
+  // Serial.print(" ");
+  // Serial.println(SVLR);
 
   delay(20);
 }
