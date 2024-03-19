@@ -113,13 +113,13 @@ void loop(void) // main loop
   char command = 't';
 
     readGyro();
-  if (millis() - previous_millis > 500) //only send every 200ms
+  if (millis() - previous_millis > 200) //only send every 200ms
   {
     previous_millis = millis();
     char message[8];
     dtostrf(currentAngle,6,2,message);
-    //BluetoothSerial.println(message);
-    Serial.println(message);
+    BluetoothSerial.println(message);
+    //Serial.println(message);
     // Serial.print(" : ");
     // Serial.println(time);
   }
