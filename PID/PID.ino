@@ -1,3 +1,4 @@
+
 /*
   MechEng 706 Base Code
 
@@ -722,7 +723,7 @@ int SVRR = 0;
 int SVLF = 0;
 int SVLR = 0;
 
-int Kp = 1000;
+int Kp = 0;
 int SV_P = 0;
 
 float TargetAngle_Radius = 0.0;
@@ -736,13 +737,14 @@ void MoveStraightAlongAngle(float TargetAngle_Degree, float Power)
   SVLF = SVRF;
   SVLR = SVRF;
 
-  TargetAngle_Radius = 2*3.1415926*TargetAngle_Degree/360;
+  TargetAngle_Radius = 2*3.1415926*TargetAngle_Degree/(float)360.0;
+  ///(float)360
 
-  SVLF = -SVLF*((cos(TargetAngle_Radius-sin(TargetAngle_Radius))));
-  SVLR = -SVLR*((cos(TargetAngle_Radius)+sin(TargetAngle_Radius)));
-  SVRR = SVRR*((cos(TargetAngle_Radius-sin(TargetAngle_Radius))));
-  SVRF = SVRF*((cos(TargetAngle_Radius)+sin(TargetAngle_Radius)));
-  
+  SVRR = SVRR*(cos(TargetAngle_Radius)-sin(TargetAngle_Radius));
+  SVRF = SVRF*(cos(TargetAngle_Radius)+sin(TargetAngle_Radius));
+  SVLF = -SVLF*(cos(TargetAngle_Radius)-sin(TargetAngle_Radius));
+  SVLR = -SVLR*(cos(TargetAngle_Radius)+sin(TargetAngle_Radius));
+
   readGyro1();
   ErrorAngle_Radius = TargetAngle_Radius - 2*3.1415926*currentAngle/360;
   SV_P = -Kp*ErrorAngle_Radius;
@@ -764,15 +766,17 @@ void MoveStraightAlongAngle(float TargetAngle_Degree, float Power)
 
   Serial.print(currentAngle);
   Serial.print(" ");
+  //Serial.print(TargetAngle_Radius);
+  //Serial.print(" ");
   Serial.print(SV_P);
   Serial.print(" ");
-  Serial.print(1500 + SVRF);
+  Serial.print(SVRR);
   Serial.print(" ");
-  Serial.print(1500 + SVRR);
+  Serial.print(SVRF);
   Serial.print(" ");
-  Serial.print(1500 + SVLF);
+  Serial.print(SVLF);
   Serial.print(" ");
-  Serial.println(1500 + SVLR);
+  Serial.println(SVLR);
 
   delay(20);
 }
