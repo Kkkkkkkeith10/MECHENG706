@@ -152,7 +152,7 @@ void loop(void) // main loop
 
       while(true)
       {
-        MoveStraightAlongAngle(0, 100);
+        MoveStraightAlongAngle(90, 100);
       }
       
       
@@ -722,7 +722,7 @@ int SVRR = 0;
 int SVLF = 0;
 int SVLR = 0;
 
-int Kp = 800;
+int Kp = 1000;
 int SV_P = 0;
 
 float TargetAngle_Radius = 0.0;
@@ -746,19 +746,16 @@ void MoveStraightAlongAngle(float TargetAngle_Degree, float Power)
   readGyro1();
   ErrorAngle_Radius = TargetAngle_Radius - 2*3.1415926*currentAngle/360;
   SV_P = -Kp*ErrorAngle_Radius;
-  if(SV_P > 200)
-  {
-    SV_P = 200;
-  }
-  if(SV_P < -200)
-  {
-    SV_P = -200;
-  }
 
   SVRF += SV_P;
   SVRR += SV_P;
   SVLF += SV_P;
   SVLR += SV_P;
+
+  SVRF = saturation(SVRF);
+  SVRR = saturation(SVRR);
+  SVLF = saturation(SVLF);
+  SVLR = saturation(SVLR);
 
   left_font_motor.writeMicroseconds(1500 + SVLR);
   left_rear_motor.writeMicroseconds(1500 + SVLF);
@@ -778,6 +775,22 @@ void MoveStraightAlongAngle(float TargetAngle_Degree, float Power)
   Serial.println(1500 + SVLR);
 
   delay(20);
+}
+
+int saturation(int value)
+{
+  if(value > 500)
+  {
+    return 500;
+  }
+  else if(value < -500)
+  {
+    return -500;
+  }
+  else
+  {
+    return value;
+  }
 }
 
 void driveStrightWithGyro(int millsecond)
