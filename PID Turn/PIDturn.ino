@@ -85,13 +85,16 @@ float rotationThreshold = 1.5; // because of gyro drifting, defining rotation an
 float gyroRate = 0;     // read out value of sensor in voltage
 float currentAngle = 0; // current angle calculated by angular velocity integral on
 
+// statemachine
+int currentState = 0;
+
 // Serial Pointer
 HardwareSerial *SerialCom;
 
 int pos = 0;
 
-  int i;
-  float sum = 0;
+int i;
+float sum = 0;
 void setup(void)
 {
   turret_motor.attach(11);
@@ -107,7 +110,6 @@ void setup(void)
   SerialCom->println("MECHENG706_Base_Code_25/01/2018");
 
   BluetoothSerial.begin(115200);
-
 
   delay(1000);
   SerialCom->println("Setup....");
@@ -131,51 +133,41 @@ void setup(void)
 void loop(void) // main loop
 {
   static STATE machine_state = INITIALISING;
-  //Finite-state machine Code
-  switch (machine_state) {
-    case INITIALISING:
-      machine_state = initialising();
-      break;
-    case RUNNING: //Lipo Battery Volage OK
-      //machine_state =  running();
-      //SerialCom->println(String(currentAngle));
-      //SerialCom->print(String(currentAngle));
-      //SerialCom->print("\n");
-      
+  // Finite-state machine Code
+  switch (machine_state)
+  {
+  case INITIALISING:
+    machine_state = initialising();
+    break;
+  case RUNNING: // Lipo Battery Volage OK
+                // machine_state =  running();
+                // SerialCom->println(String(currentAngle));
+                // SerialCom->print(String(currentAngle));
+                // SerialCom->print("\n");
 
-      //driveStrightWithGyro(6000);
-      //delay(5);
-      //break;
+    // driveStrightWithGyro(6000);
+    // delay(5);
+    // break;
+    stateMachine(currentState);
 
-
-
-
-      trunDegree(90);
-      
-      
-
-
-
-
-    case STOPPED: //Stop of Lipo Battery voltage is too low, to protect Battery
-      machine_state =  stopped();
-      break;
+  case STOPPED: // Stop of Lipo Battery voltage is too low, to protect Battery
+    machine_state = stopped();
+    break;
   };
-
 }
 
 STATE initialising()
 {
   // initialising
   SerialCom->println("INITIALISING....");
-  //delay(1000); // One second delay to see the serial String "INITIALISING...."
+  // delay(1000); // One second delay to see the serial String "INITIALISING...."
   SerialCom->println("Enabling Motors...");
   enable_motors();
   SerialCom->println("RUNNING STATE...");
 
-// setting up gyro
-  //int i;
-  //float sum = 0;
+  // setting up gyro
+  // int i;
+  // float sum = 0;
   // pinMode(sensorPin, INPUT);
   Serial.println("please keep the sensor still for calibration");
   Serial.println("get the gyro zero voltage");
@@ -186,10 +178,6 @@ STATE initialising()
     delay(5);
   }
   gyroZeroVoltage = sum / 100; // average the sum as the zero drifting
-
-
-
-
 
   return RUNNING;
 }
@@ -367,7 +355,7 @@ boolean is_battery_voltage_OK()
 #endif
 
 #ifndef NO_HC - SR04
-void HC_SR04_range()
+float HC_SR04_range()
 {
   unsigned long t1;
   unsigned long t2;
@@ -428,6 +416,8 @@ void HC_SR04_range()
     SerialCom->print(cm);
     SerialCom->println("cm");
   }
+
+  return cm;
 }
 #endif
 
@@ -688,31 +678,29 @@ void readGyro()
   }
 }
 
-
 float GyroTimePrevious = 0.0;
 float GyroTimeNow = 0.0;
 
 void readGyro1()
 {
-  GyroTimeNow = (float)millis()/1000;
+  GyroTimeNow = (float)millis() / 1000;
 
-  gyroRate = (analogRead(sensorPin) * gyroSupplyVoltage) / 1023;     // find the voltage offset the value of voltage when gyro is zero (still)
-  
-  gyroRate -= (gyroZeroVoltage / 1023 * 5);  
-  
-  float angularVelocity = gyroRate / gyroSensitivity;  // read out voltage divided the gyro sensitivity to calculate the angular velocity
+  gyroRate = (analogRead(sensorPin) * gyroSupplyVoltage) / 1023; // find the voltage offset the value of voltage when gyro is zero (still)
+
+  gyroRate -= (gyroZeroVoltage / 1023 * 5);
+
+  float angularVelocity = gyroRate / gyroSensitivity; // read out voltage divided the gyro sensitivity to calculate the angular velocity
 
   // if the angular velocity is less than the threshold, ignore it
   if (angularVelocity >= rotationThreshold || angularVelocity <= -rotationThreshold)
   {
     // we are running a loop in T. one second will run (1000/T).
-    float angleChange = -angularVelocity*(GyroTimeNow - GyroTimePrevious);
+    float angleChange = -angularVelocity * (GyroTimeNow - GyroTimePrevious);
     currentAngle += angleChange;
   }
 
   GyroTimePrevious = GyroTimeNow;
 }
-
 
 int SVRF = 0;
 int SVRR = 0;
@@ -723,26 +711,27 @@ int Kp = 1000;
 int SV_P = 0;
 
 float TargetAngle_Radius = 0.0;
-float ErrorAngle_Radius = 0.0;  //TargetAngle - CurrentAngle
-float torlance = 10.0; // degree
+float ErrorAngle_Radius = 0.0; // TargetAngle - CurrentAngle
+float torlance = 10.0;         // degree
 
 void MoveStraightAlongAngle(float TargetAngle_Degree, float Power)
 {
-  SVRF = (int)300*(Power/100);
+  SVRF = (int)300 * (Power / 100);
   SVRR = SVRF;
   SVLF = SVRF;
   SVLR = SVRF;
 
-  TargetAngle_Radius = 2*3.1415926*TargetAngle_Degree/360;
+  TargetAngle_Radius = 2 * 3.1415926 * TargetAngle_Degree / (float)360.0;
+  ///(float)360
 
-  SVLF = -SVLF*((cos(TargetAngle_Radius-sin(TargetAngle_Radius))));
-  SVLR = -SVLR*((cos(TargetAngle_Radius)+sin(TargetAngle_Radius)));
-  SVRR = SVRR*((cos(TargetAngle_Radius-sin(TargetAngle_Radius))));
-  SVRF = SVRF*((cos(TargetAngle_Radius)+sin(TargetAngle_Radius)));
-  
+  SVRR = SVRR * (cos(TargetAngle_Radius) - sin(TargetAngle_Radius));
+  SVRF = SVRF * (cos(TargetAngle_Radius) + sin(TargetAngle_Radius));
+  SVLF = -SVLF * (cos(TargetAngle_Radius) - sin(TargetAngle_Radius));
+  SVLR = -SVLR * (cos(TargetAngle_Radius) + sin(TargetAngle_Radius));
+
   readGyro1();
-  ErrorAngle_Radius = TargetAngle_Radius - 2*3.1415926*currentAngle/360;
-  SV_P = -Kp*ErrorAngle_Radius;
+  ErrorAngle_Radius = TargetAngle_Radius - (2 * 3.1415926 * currentAngle / 360 + TargetAngle_Radius);
+  SV_P = -Kp * ErrorAngle_Radius;
 
   SVRF += SV_P;
   SVRR += SV_P;
@@ -754,45 +743,51 @@ void MoveStraightAlongAngle(float TargetAngle_Degree, float Power)
   SVLF = saturation(SVLF);
   SVLR = saturation(SVLR);
 
-  left_font_motor.writeMicroseconds(1500 + SVLR);
-  left_rear_motor.writeMicroseconds(1500 + SVLF);
+  left_font_motor.writeMicroseconds(1500 + SVLF);
+  left_rear_motor.writeMicroseconds(1500 + SVLR);
   right_rear_motor.writeMicroseconds(1500 + SVRR);
   right_font_motor.writeMicroseconds(1500 + SVRF);
 
-  Serial.print(currentAngle);
-  Serial.print(" ");
-  Serial.print(SV_P);
-  Serial.print(" ");
-  Serial.print(1500 + SVRF);
-  Serial.print(" ");
-  Serial.print(1500 + SVRR);
-  Serial.print(" ");
-  Serial.print(1500 + SVLF);
-  Serial.print(" ");
-  Serial.println(1500 + SVLR);
+  // Serial.print(currentAngle);
+  // Serial.print(" ");
+  // Serial.print(TargetAngle_Radius);
+  // Serial.print(" ");
+  // Serial.print(ErrorAngle_Radius);
+  // Serial.print(" ");
+  // Serial.print(SV_P);
+  // Serial.print(" ");
+  // Serial.print(SVRR);
+  // Serial.print(" ");
+  // Serial.print(SVRF);
+  // Serial.print(" ");
+  // Serial.print(SVLF);
+  // Serial.print(" ");
+  // Serial.println(SVLR);
 
   delay(20);
 }
 
-void trunDegree(float TargetAngle_Degree){
+void trunDegree(float TargetAngle_Degree)
+{
   float Power = 100;
   float torlance = 0.5;
-  while((currentAngle< TargetAngle_Degree-torlance) || (currentAngle> TargetAngle_Degree+torlance) ){
-    SVRF = (int)300*(Power/100);
+  while ((currentAngle < TargetAngle_Degree - torlance) || (currentAngle > TargetAngle_Degree + torlance))
+  {
+    SVRF = (int)300 * (Power / 100);
     SVRR = SVRF;
     SVLF = SVRF;
     SVLR = SVRF;
 
-    TargetAngle_Radius = 2*3.1415926*TargetAngle_Degree/360;
+    TargetAngle_Radius = 2 * 3.1415926 * TargetAngle_Degree / 360;
 
-    SVLF = -SVLF*((cos(TargetAngle_Radius-sin(TargetAngle_Radius))));
-    SVLR = -SVLR*((cos(TargetAngle_Radius)+sin(TargetAngle_Radius)));
-    SVRR = SVRR*((cos(TargetAngle_Radius-sin(TargetAngle_Radius))));
-    SVRF = SVRF*((cos(TargetAngle_Radius)+sin(TargetAngle_Radius)));
-    
+    SVLF = -SVLF * ((cos(TargetAngle_Radius - sin(TargetAngle_Radius))));
+    SVLR = -SVLR * ((cos(TargetAngle_Radius) + sin(TargetAngle_Radius)));
+    SVRR = SVRR * ((cos(TargetAngle_Radius - sin(TargetAngle_Radius))));
+    SVRF = SVRF * ((cos(TargetAngle_Radius) + sin(TargetAngle_Radius)));
+
     readGyro1();
-    ErrorAngle_Radius = TargetAngle_Radius - 2*3.1415926*currentAngle/360;
-    SV_P = -Kp*ErrorAngle_Radius;
+    ErrorAngle_Radius = TargetAngle_Radius - 2 * 3.1415926 * currentAngle / 360;
+    SV_P = -Kp * ErrorAngle_Radius;
 
     SVRF += SV_P;
     SVRR += SV_P;
@@ -809,29 +804,17 @@ void trunDegree(float TargetAngle_Degree){
     right_rear_motor.writeMicroseconds(1500 + SVRR);
     right_font_motor.writeMicroseconds(1500 + SVRF);
 
-    Serial.print(currentAngle);
-    Serial.print(" ");
-    Serial.print(SV_P);
-    Serial.print(" ");
-    Serial.print(1500 + SVRF);
-    Serial.print(" ");
-    Serial.print(1500 + SVRR);
-    Serial.print(" ");
-    Serial.print(1500 + SVLF);
-    Serial.print(" ");
-    Serial.println(1500 + SVLR);
-
     delay(20);
   }
 }
 
 int saturation(int value)
 {
-  if(value > 500)
+  if (value > 500)
   {
     return 500;
   }
-  else if(value < -500)
+  else if (value < -500)
   {
     return -500;
   }
@@ -841,12 +824,39 @@ int saturation(int value)
   }
 }
 
-void driveStrightWithGyro(int millsecond)
-{ 
+void driveStrightUntilDistance(int cm)
+{
   readGyro();
-  float target =  currentAngle;
+  float target = currentAngle;
+  while (HC_SR04_range() > cm)
+  {
+    MoveStraightAlongAngle(target, 100);
+  }
+  currentState++;
+  stop();
+}
+
+void driveStringhtForDistance(int cm)
+{
+  readGyro();
+  float target = currentAngle;
+  float torlance = 3; // degree
+  float currentDistance = HC_SR04_range();
+
+  while (HC_SR04_range() > (currentDistance - cm))
+  {
+    MoveStraightAlongAngle(target, 100);
+  }
+  currentState++;
+  stop();
+}
+
+void turnAngleWithGyro(float angle, float millisecond)
+{
+  readGyro();
+  float target = currentAngle + angle;
   float torlance = 10; // degree
-  unsigned long timeAtDestination = millis() + millsecond;
+  unsigned long timeAtDestination = millis() + millisecond;
 
   while (millis() < timeAtDestination)
   {
@@ -854,12 +864,12 @@ void driveStrightWithGyro(int millsecond)
     SerialCom->print(currentAngle);
     SerialCom->print(" ");
 
-    if((abs(currentAngle) < torlance) ||(abs(currentAngle) > (360-torlance)))
+    if ((currentAngle < (torlance + target)) && (currentAngle > (-torlance + target)))
     {
       forward();
       SerialCom->println("forward");
     }
-    else if((currentAngle > torlance)&&(currentAngle < 90))
+    else if ((currentAngle > (torlance + target)) && (currentAngle < (180 + target)))
     {
       ccw();
       SerialCom->println("ccw");
@@ -874,34 +884,36 @@ void driveStrightWithGyro(int millsecond)
   }
 }
 
-void turnAngleWithGyro(float angle, float millisecond){
-  readGyro();
-  float target =  currentAngle + angle;
-  float torlance = 10; // degree
-  unsigned long timeAtDestination = millis() + millisecond;
+void stateMachine(int adress)
+{
 
-  while (millis() < timeAtDestination)
+  switch (adress)
   {
-    readGyro();
-    SerialCom->print(currentAngle);
-    SerialCom->print(" ");
-
-    if((currentAngle < (torlance + target))&&(currentAngle > (-torlance + target)))
-    {
-      forward();
-      SerialCom->println("forward");
-    }
-    else if((currentAngle > (torlance+target))&&(currentAngle < (180+target)))
-    {
-      ccw();
-      SerialCom->println("ccw");
-    }
-    else
-    {
-      cw();
-      SerialCom->println("cw");
-    }
-
-    delay(40);
+  case 1:
+    driveStrightUntilDistance(35);
+    SerialCom->println("1");
+    break;
+  case 2:
+    trunDegree(90);
+    SerialCom->println("2");
+    break;
+  case 3:
+    driveStringhtForDistance(35);
+    SerialCom->println("3");
+    break;
+  case 4:
+    trunDegree(180);
+    SerialCom->println(currentState);
+    break;
+  case 5:
+    driveStrightUntilDistance(35);
+    SerialCom->println(currentState);
+    break;
+  case 6:
+    trunDegree(270);
+    SerialCom->println(currentState);
+    break;
+  case 7:
+    currentState = 1;
   }
 }
