@@ -68,7 +68,7 @@ Servo right_rear_motor; // create servo object to control Vex Motor Controller 2
 Servo right_font_motor; // create servo object to control Vex Motor Controller 29
 Servo turret_motor;
 
-int speed_val = 300;
+int speed_val = 500;
 int speed_change;
 
 // gyro
@@ -163,9 +163,14 @@ void loop(void) // main loop
   //   interpret_command(command);
 
   // }
+  while(true)
+  {
+    MoveStraightPID(100);
+  }
+  
 
-    stateMachine(currentState);
-    break;
+    // stateMachine(currentState);
+    // break;
 
   case STOPPED: // Stop of Lipo Battery voltage is too low, to protect Battery
     machine_state = stopped();
@@ -713,7 +718,7 @@ void readGyro1()
   {
     // we are running a loop in T. one second will run (1000/T).
     float angleChange = -angularVelocity * (GyroTimeNow - GyroTimePrevious);
-    currentAngle += angleChange;
+    currentAngle += angleChange -0.15;
   }
 
   GyroTimePrevious = GyroTimeNow;
@@ -828,7 +833,7 @@ void driveStrightUntilDistance(int cm)
 
   while (HC_SR04_range() > cm)
   {
-    MoveStraightPID(float Power);
+    MoveStraightPID(100);
     delay(20);
   }
   currentState++;
@@ -931,6 +936,7 @@ void stateMachine(int adress)
 
 int KP = 20;
 float ErrorAngle_Degree = 0.0;
+float offset_angle = -0.1;
 
 void MoveStraightPID(float Power)
 {
@@ -940,6 +946,7 @@ void MoveStraightPID(float Power)
   SVLR = -SVRF;
 
   readGyro1();
+  //currentAngle -= offset_angle;
   ErrorAngle_Degree = currentAngle;
   SV_P = KP*ErrorAngle_Degree;
 
@@ -953,7 +960,7 @@ void MoveStraightPID(float Power)
   SVLF = saturation(SVLF);
   SVLR = saturation(SVLR);
 
-  // Serial.print(currentAngle);
+  // Serial.println(currentAngle);
   // Serial.print(" ");
   // Serial.print(ErrorAngle_Degree);
   // Serial.print(" ");
