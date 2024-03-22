@@ -828,23 +828,7 @@ void driveStrightUntilDistance(int cm)
 
   while (HC_SR04_range() > cm)
   {
-    readGyro1();
-
-    if((abs(currentAngle) < (torlance) ) ||(abs(currentAngle) > (-torlance)))
-    {
-      reverse();
-    }
-    else if((currentAngle > (torlance)) && (currentAngle <(180))
-    )
-    {
-      ccw();
-    }
-    else
-    {
-      cw();
-    }
-
-   
+    MoveStraightPID(float Power);
     delay(20);
   }
   currentState++;
@@ -940,4 +924,54 @@ void stateMachine(int adress)
     currentState = 1;
     break;
   }
+}
+
+
+
+
+int KP = 20;
+float ErrorAngle_Degree = 0.0;
+
+void MoveStraightPID(float Power)
+{
+  SVRF = (int)500*(Power/100);
+  SVRR = SVRF;
+  SVLF = -SVRF;
+  SVLR = -SVRF;
+
+  readGyro1();
+  ErrorAngle_Degree = currentAngle;
+  SV_P = KP*ErrorAngle_Degree;
+
+  SVRF += SV_P;
+  SVRR += SV_P;
+  SVLF += SV_P;
+  SVLR += SV_P;
+
+  SVRF = saturation(SVRF);
+  SVRR = saturation(SVRR);
+  SVLF = saturation(SVLF);
+  SVLR = saturation(SVLR);
+
+  // Serial.print(currentAngle);
+  // Serial.print(" ");
+  // Serial.print(ErrorAngle_Degree);
+  // Serial.print(" ");
+  // Serial.print(SV_P);
+  // Serial.print(" ");
+  // Serial.print(1500 + SVRR);
+  // Serial.print(" ");
+  // Serial.print(1500 + SVRF);
+  // Serial.print(" ");
+  // Serial.print(1500 + SVLF);
+  // Serial.print(" ");
+  // Serial.println(1500 + SVLR);
+
+
+  left_font_motor.writeMicroseconds(1500 + SVLF);
+  left_rear_motor.writeMicroseconds(1500 + SVLR);
+  right_rear_motor.writeMicroseconds(1500 + SVRR);
+  right_font_motor.writeMicroseconds(1500 + SVRF);
+
+  delay(50);
 }
