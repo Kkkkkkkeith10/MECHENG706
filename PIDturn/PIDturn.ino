@@ -51,13 +51,13 @@ const int ECHO_PIN = 49;
 
 // Default IR sensor pins, these pins are defined by the Shield
 #define IR_41_01 12
-#define IR_41_02 13
-#define IR_41_03 13
+#define IR_41_02 A8
+#define IR_41_03 A10
 // #define IR_2Y_01 14
-#define IR_2Y_02 14
+#define IR_2Y_02 A11
 // uncomment if these IR sensors are used
 //  #define IR_2Y_03 14
-#define IR_2Y_04 15
+#define IR_2Y_04 A9
 
 // Anything over 400 cm (23200 us pulse) is "out of range". Hit:If you decrease to this the ranging sensor but the timeout is short, you may not need to read up to 4meters.
 const unsigned int MAX_DIST = 23200;
@@ -165,8 +165,11 @@ void loop(void) // main loop
   // }
   while(true)
   {
-    MoveStraightPID(100);
+    //MoveStraightAlongAngle(0,100);
+    stateMachine(currentState);
   }
+  // turnWithIR(true);
+  // break;
   
 
     // stateMachine(currentState);
@@ -687,7 +690,7 @@ void readGyro()
   {
     // we are running a loop in T. one second will run (1000/T).
     float angleChange = angularVelocity / (1000 / T);
-    currentAngle += angleChange;
+    currentAngle += angleChange +0.1;
   }
   // keep the angle between 0-360
   if (currentAngle < 0)
@@ -718,9 +721,9 @@ void readGyro1()
   {
     // we are running a loop in T. one second will run (1000/T).
     float angleChange = -angularVelocity * (GyroTimeNow - GyroTimePrevious);
-    currentAngle += angleChange -0.15;
+    currentAngle += angleChange -0.003;
   }
-
+  SerialCom->println(currentAngle);
   GyroTimePrevious = GyroTimeNow;
 }
 
@@ -789,7 +792,7 @@ void MoveStraightAlongAngle(float TargetAngle_Degree, float Power)
   delay(20);
 }
 
-void trunDegree(float TargetAngle_Degree)
+void trunDegree(float TargetAngle_Degree )
 {
   float Power = 100;
   float torlance = 0.5;
@@ -804,6 +807,8 @@ void trunDegree(float TargetAngle_Degree)
       cw();
     }
   }
+
+
   stop();
   currentState++;
 }
@@ -934,7 +939,7 @@ void stateMachine(int adress)
 
 
 
-int KP = 20;
+int KP = 100;
 float ErrorAngle_Degree = 0.0;
 float offset_angle = -0.1;
 
@@ -981,4 +986,74 @@ void MoveStraightPID(float Power)
   right_font_motor.writeMicroseconds(1500 + SVRF);
 
   delay(50);
+}
+
+void turnWithIR(bool clockwise){
+  //cw = 1 for cw, 0 for ccw
+  pastIR41 = []
+
+  if(clockwise){
+    while(abs(IR_sensorReadDistance("41_02") -IR_sensorReadDistance("2Y_04")) > 30.0){
+      SerialCom->print("41_02: ");
+      SerialCom->println(IR_sensorReadDistance("41_02"));
+      SerialCom->print("2Y_04: ");
+      SerialCom->println(IR_sensorReadDistance("2Y_04"));
+      SerialCom->print("Difference: ");
+      SerialCom->println(abs(IR_sensorReadDistance("41_02") -IR_sensorReadDistance("2Y_04")));
+      cw();
+      delay(500);
+
+    }
+  }
+  else{
+    while(abs(IR_sensorReadDistance("41_03") -IR_sensorReadDistance("2Y_02")) > 30){
+      ccw();
+    }
+  }
+  SerialCom->println("stopeed");
+  stop();
+  currentState++;
+
+}
+
+
+void homeStateMachine(int currentState){
+  switch (currentState)
+  {
+  case 1:
+    driveStrightUntilDistance(15);
+    SerialCom->println("1");
+    break;
+  case 2:
+    trunDegree(90);
+    SerialCom->println("2");
+    break;
+  case 3:
+    driveStringhtForDistance(35);
+    SerialCom->println("3");
+    break;
+  case 4:
+    trunDegree(90);
+    SerialCom->println(currentState);
+    break;
+  case 5:
+    driveStrightUntilDistance(35);
+    SerialCom->println(currentState);
+    break;
+  case 6:
+    trunDegree(-90);
+    SerialCom->println(currentState);
+    break;
+    case 7:
+    driveStringhtForDistance(35);
+    SerialCom->println("3");
+    break;
+  case 8:
+    trunDegree(-90);
+    SerialCom->println(currentState);
+    break;
+  case 9:
+    currentState = 1;
+    break;
+  }
 }
