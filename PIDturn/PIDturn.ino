@@ -83,7 +83,7 @@ float gyroRate = 0;     // read out value of sensor in voltage
 float currentAngle = 0; // current angle calculated by angular velocity integral on
 
 // statemachine
-int currentState = 1;
+int currentState = 0;
 
 // Serial Pointer
 HardwareSerial *SerialCom;
@@ -163,13 +163,21 @@ void loop(void) // main loop
   //   interpret_command(command);
 
   // }
-  while(true)
-  {
-    //MoveStraightAlongAngle(0,100);
-    stateMachine(currentState);
+  // while(true)
+  // {
+  //   //MoveStraightAlongAngle(0,100);
+  //   stateMachine(currentState);
+  // }
+  while(true){
+    if(currentState<=8){
+      homeStateMachine(currentState);
+    }
+    else{
+      stateMachine(currentState);
+    }
+    
   }
-  // turnWithIR(true);
-  // break;
+  break;
   
 
     // stateMachine(currentState);
@@ -807,9 +815,9 @@ void trunDegree(float TargetAngle_Degree )
       cw();
     }
   }
-
-
   stop();
+
+  
   currentState++;
 }
 
@@ -898,40 +906,40 @@ void stateMachine(int adress)
 
   switch (adress)
   {
-  case 1:
+  case 8:
     driveStrightUntilDistance(35);
     SerialCom->println("1");
     break;
-  case 2:
+  case 9:
     trunDegree(90);
     SerialCom->println("2");
     break;
-  case 3:
+  case 10:
     driveStringhtForDistance(35);
     SerialCom->println("3");
     break;
-  case 4:
+  case 11:
     trunDegree(90);
     SerialCom->println(currentState);
     break;
-  case 5:
+  case 12:
     driveStrightUntilDistance(35);
     SerialCom->println(currentState);
     break;
-  case 6:
+  case 13:
     trunDegree(-90);
     SerialCom->println(currentState);
     break;
-    case 7:
+    case 14:
     driveStringhtForDistance(35);
     SerialCom->println("3");
     break;
-  case 8:
+  case 15:
     trunDegree(-90);
     SerialCom->println(currentState);
     break;
-  case 9:
-    currentState = 1;
+  case 16:
+    currentState = 8;
     break;
   }
 }
@@ -990,70 +998,320 @@ void MoveStraightPID(float Power)
 
 void turnWithIR(bool clockwise){
   //cw = 1 for cw, 0 for ccw
-  pastIR41 = []
-
-  if(clockwise){
-    while(abs(IR_sensorReadDistance("41_02") -IR_sensorReadDistance("2Y_04")) > 30.0){
-      SerialCom->print("41_02: ");
-      SerialCom->println(IR_sensorReadDistance("41_02"));
-      SerialCom->print("2Y_04: ");
-      SerialCom->println(IR_sensorReadDistance("2Y_04"));
-      SerialCom->print("Difference: ");
-      SerialCom->println(abs(IR_sensorReadDistance("41_02") -IR_sensorReadDistance("2Y_04")));
-      cw();
-      delay(500);
-
-    }
-  }
-  else{
-    while(abs(IR_sensorReadDistance("41_03") -IR_sensorReadDistance("2Y_02")) > 30){
-      ccw();
-    }
-  }
-  SerialCom->println("stopeed");
-  stop();
+  
   currentState++;
+}
+
+void checkForLongSide(){
+  const int readingsCount = 5;
+  float sum = 0;
+  float average = 0;
+
+  // Take 5 readings, with a 20ms delay between each
+  for (int i = 0; i < readingsCount; ++i) {
+      sum += HC_SR04_range();  // Assuming HC_SR04_range() returns distance in cm
+      delay(20);  // Delay for 20 milliseconds
+  }
+
+  // Calculate the average distance
+  average = sum / readingsCount;
+
+  // Convert average to meters for comparison (1cm = 0.01m)
+  average /= 100.0;  // Convert cm to meters
+
+  // Update currentStats based on the average distance
+  if (average < 1.2) {
+      currentState += 1;
+  } else {
+      currentState += 2;
+  }
+}
+
+
+void homeStateMachine(int adress){
+  switch (adress)
+  {
+    case 0:
+    scanUntilNormal();
+    SerialCom->println("0");
+    break;
+
+  case 1:
+    driveStrightUntilDistance(20);
+    SerialCom->println("1");
+    break;
+  case 2:
+     //trunDegree(90);
+    currentState++;
+    SerialCom->println(currentState);
+    break;
+
+  //need funtion
+  case 3:
+    homing_normal_system(0,0,0,1,10);
+    SerialCom->println("2");
+    break;
+  case 4:
+    driveStrightUntilDistance(35);
+    SerialCom->println("3");
+    break;
+  case 5:
+    trunDegree(90);
+    SerialCom->println(currentState);
+    break;
+  case 6:
+    checkForLongSide();
+    //goto case 6 if shortside
+    SerialCom->println(currentState);
+    break;
+  case 7:
+    //if short side
+    driveStrightUntilDistance(35);
+    SerialCom->println(currentState);
+    break;
+  // case 8:
+  //   //=======================================================main start=============================
+  //   driveStringhtForDistance(35);
+  //   SerialCom->println("3");
+  //   break;
+  // case 8:
+  //   trunDegree(-90);
+  //   SerialCom->println(currentState);
+  //   break;
+  // case 9:
+  //   currentState = 1;
+  //   break;
+  }
 
 }
 
 
-void homeStateMachine(int currentState){
-  switch (currentState)
+float temp_4102 = 0.0;
+float temp_4103 = 0.0;
+float temp_2Y02 = 0.0;
+float temp_2Y04 = 0.0;
+
+void normal_system(bool use_Gyro, bool use_sonar, bool use_left_side_IRs, bool use_right_side_IRs, float tolarence)
+{
+  //use left or right side IRs to make the system parallel to the wall, only one side can be used at a sigle call
+  //IR sensors groups are:     use_left_side_IRs: 41_02 & 2Y_04         use_right_side_IRs: 41_03 & 2Y_02
+  //use_Gyro will reset the gyro
+  //currently no sonar related actions are done
+  
+  if(use_left_side_IRs)
   {
-  case 1:
-    driveStrightUntilDistance(15);
-    SerialCom->println("1");
-    break;
-  case 2:
-    trunDegree(90);
-    SerialCom->println("2");
-    break;
-  case 3:
-    driveStringhtForDistance(35);
-    SerialCom->println("3");
-    break;
-  case 4:
-    trunDegree(90);
-    SerialCom->println(currentState);
-    break;
-  case 5:
-    driveStrightUntilDistance(35);
-    SerialCom->println(currentState);
-    break;
-  case 6:
-    trunDegree(-90);
-    SerialCom->println(currentState);
-    break;
-    case 7:
-    driveStringhtForDistance(35);
-    SerialCom->println("3");
-    break;
-  case 8:
-    trunDegree(-90);
-    SerialCom->println(currentState);
-    break;
-  case 9:
-    currentState = 1;
-    break;
+    temp_4102 = IR_sensorReadDistance("41_02") + 7;
+    temp_2Y04 = IR_sensorReadDistance("2Y_04");
+
+    while((temp_4102 - temp_2Y04) > tolarence)
+    {
+      ccw_low();
+
+      temp_4102 = IR_sensorReadDistance("41_02") + 7;
+      temp_2Y04 = IR_sensorReadDistance("2Y_04");
+    }
+    stop();
+    while((temp_2Y04 - temp_4102) > tolarence)
+    {
+      cw_low();
+
+      temp_4102 = IR_sensorReadDistance("41_02") + 7;
+      temp_2Y04 = IR_sensorReadDistance("2Y_04");
+    }
+    stop();
   }
+  else if(use_right_side_IRs)
+  {
+    temp_4103 = IR_sensorReadDistance("41_03");
+    temp_2Y02 = IR_sensorReadDistance("2Y_02") + 15;
+
+    while((temp_4103 - temp_2Y02) > tolarence)
+    {
+      cw_low();
+
+      temp_4103 = IR_sensorReadDistance("41_03");
+      temp_2Y02 = IR_sensorReadDistance("2Y_02") + 15;
+    }
+    stop();
+    while((temp_2Y02 - temp_4103) > tolarence)
+    {
+      ccw_low();
+
+      temp_4103 = IR_sensorReadDistance("41_03");
+      temp_2Y02 = IR_sensorReadDistance("2Y_02") + 15;
+    }
+    stop();
+  }
+  else {}
+
+  if(use_Gyro)
+  {
+    resetGyro();
+  }
+  stop();
+  currentState++;
+}
+
+void scanUntilNormal() {
+    const int readingsCount = 20;
+    float pastReadings[readingsCount] = {0};
+    float currentReadings[readingsCount];
+    float pastAverage, currentAverage;
+
+    // Initialize past readings, assuming you have a way to fill this up before the loop starts
+    for (int i = 0; i < readingsCount; ++i) {
+        pastReadings[i] = HC_SR04_range();
+        delay(5); // Initial delay to fill the past readings
+    }
+
+    while (true) {  // Replace true with a condition to stop if necessary
+      ccw_low();
+        pastAverage = 0;
+        currentAverage = 0;
+
+        // Get current 5 readings with a delay between each
+        for (int i = 0; i < readingsCount; ++i) {
+            currentReadings[i] = HC_SR04_range();
+            delay(5); // Delay for 20 milliseconds
+        }
+
+        // Calculate the averages
+        for (int i = 0; i < readingsCount; ++i) {
+            pastAverage += pastReadings[i];
+            currentAverage += currentReadings[i];
+        }
+        pastAverage /= readingsCount;
+        currentAverage /= readingsCount;
+
+        // Determine whether to continue rotating or stop
+        if (currentAverage < pastAverage) {
+            ccw_low();  // If the average distance is not increasing, continue rotating
+        } else {
+            stop();  // If the average distance is increasing, stop
+            break;  // Exit the loop if you want to stop checking after stopping
+        }
+
+        // Update past readings for the next iteration
+        for (int i = 0; i < readingsCount; ++i) {
+            pastReadings[i] = currentReadings[i];
+        }
+    }
+    while (true) {  // Replace true with a condition to stop if necessary
+     cw_low();
+        pastAverage = 0;
+        currentAverage = 0;
+
+        // Get current 5 readings with a delay between each
+        for (int i = 0; i < readingsCount; ++i) {
+            currentReadings[i] = HC_SR04_range();
+            delay(5); // Delay for 20 milliseconds
+        }
+
+        // Calculate the averages
+        for (int i = 0; i < readingsCount; ++i) {
+            pastAverage += pastReadings[i];
+            currentAverage += currentReadings[i];
+        }
+        pastAverage /= readingsCount;
+        currentAverage /= readingsCount;
+
+        // Determine whether to continue rotating or stop
+        if (currentAverage < pastAverage) {
+            cw_low();  // If the average distance is not increasing, continue rotating
+        } else {
+            stop();  // If the average distance is increasing, stop
+            break;  // Exit the loop if you want to stop checking after stopping
+        }
+
+        // Update past readings for the next iteration
+        for (int i = 0; i < readingsCount; ++i) {
+            pastReadings[i] = currentReadings[i];
+        }
+    }
+    currentState++;
+}
+
+void homing_normal_system(bool use_Gyro, bool use_sonar, bool use_left_side_IRs, bool use_right_side_IRs, float tolarence)
+{
+  //use left or right side IRs to make the system parallel to the wall, only one side can be used at a sigle call
+  //IR sensors groups are:     use_left_side_IRs: 41_02 & 2Y_04         use_right_side_IRs: 41_03 & 2Y_02
+  //use_Gyro will reset the gyro
+  //currently no sonar related actions are done
+  
+  
+  
+  
+    temp_4103 = IR_sensorReadDistance("41_03");
+    temp_2Y02 = IR_sensorReadDistance("2Y_02") + 15;
+    
+
+
+    while(temp_4103 <30.0 && temp_2Y02 <30.0){
+      ccw();
+      Serial.print("cw");
+    }
+      while((temp_4103 - temp_2Y02) > tolarence)
+      {
+        cw_low();
+        Serial.print("cw low");
+        temp_4103 = IR_sensorReadDistance("41_03");
+        temp_2Y02 = IR_sensorReadDistance("2Y_02") + 10;
+        Serial.print("temp_4103: ");
+        Serial.print(temp_4103);
+        Serial.print("temp_2Y02: ");
+        Serial.println(temp_2Y02);
+      }
+      stop();
+      while((temp_2Y02 - temp_4103) > tolarence)
+      {
+        ccw_low();
+        Serial.print("ccw low");
+        temp_4103 = IR_sensorReadDistance("41_03");
+        temp_2Y02 = IR_sensorReadDistance("2Y_02") + 10;
+        Serial.print("temp_4103: ");
+        Serial.print(temp_4103);
+        Serial.print("temp_2Y02: ");
+        Serial.println(temp_2Y02);
+      }
+      stop();
+    
+    
+  
+
+
+  if(use_Gyro)
+  {
+    resetGyro();
+  }
+  stop();
+  currentState++;
+}
+void resetGyro()
+{
+  Serial.println("please keep the sensor still for calibration");
+  Serial.println("get the gyro zero voltage");
+  for (i = 0; i < 100; i++) // read 100 values of voltage when gyro is at still, to calculate the zero-drift
+  {
+    sensorValue = analogRead(sensorPin);
+    sum += sensorValue;
+    delay(5);
+  }
+  gyroZeroVoltage = sum / 100; // average the sum as the zero drifting
+}
+
+int speed_val_low = 100;
+void ccw_low()
+{
+  left_font_motor.writeMicroseconds(1500 - speed_val_low);
+  left_rear_motor.writeMicroseconds(1500 - speed_val_low);
+  right_rear_motor.writeMicroseconds(1500 - speed_val_low);
+  right_font_motor.writeMicroseconds(1500 - speed_val_low);
+}
+
+void cw_low()
+{
+  left_font_motor.writeMicroseconds(1500 + speed_val_low);
+  left_rear_motor.writeMicroseconds(1500 + speed_val_low);
+  right_rear_motor.writeMicroseconds(1500 + speed_val_low);
+  right_font_motor.writeMicroseconds(1500 + speed_val_low);
 }
