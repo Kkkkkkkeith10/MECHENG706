@@ -17,7 +17,6 @@
   Author: Logan Stuart
 */
 #include <Servo.h> //Need for Servo pulse output
-#include <SoftwareSerial.h>
 
 // #define NO_READ_GYRO  //Uncomment of GYRO is not attached.
 // #define NO_HC-SR04 //Uncomment of HC-SR04 ultrasonic ranging sensor is not attached.
@@ -31,12 +30,6 @@ enum STATE
   STOPPED
 };
 
-
-#define BLUETOOTH_RX 10
-// Serial Data output pin
-#define BLUETOOTH_TX 11
-
-SoftwareSerial BluetoothSerial(BLUETOOTH_RX, BLUETOOTH_TX);
 
 // Refer to Shield Pinouts.jpg for pin locations
 
@@ -171,8 +164,7 @@ void setup(void)
   digitalWrite(TRIG_PIN, LOW);
 
   //bluetooth on
-  BluetoothSerial.begin(115200);
-  Serial.begin(115200);
+  Serial1.begin(115200);
 
   // setting up gyro
   pinMode(sensorPin, INPUT);
@@ -202,12 +194,12 @@ void loop(void) // main loop
 STATE initialising()
 {
   // initialising
-  BluetoothSerial.println("INITIALISING....");
+  Serial1.println("INITIALISING....");
   // delay(1000); // One second delay to see the serial String "INITIALISING...."
-  BluetoothSerial.println("Enabling Motors...");
+  Serial1.println("Enabling Motors...");
   enable_motors();
-  BluetoothSerial.println("please keep the sensor still for calibration");
-  //BluetoothSerial.println("get the gyro zero voltage");
+  Serial1.println("please keep the sensor still for calibration");
+  //Serial1.println("get the gyro zero voltage");
   resetGyro();
 
   return RUNNING;
@@ -225,20 +217,20 @@ STATE stopped()
   if (millis() - previous_millis > 500)
   { // print massage every 500ms
     previous_millis = millis();
-    BluetoothSerial.println("STOPPED---------");
+    Serial1.println("STOPPED---------");
 
 #ifndef NO_BATTERY_V_OK
     // 500ms timed if statement to check lipo and output speed settings
     if (is_battery_voltage_OK())
     {
-      BluetoothSerial.println("Lipo OK waiting of voltage Counter 10 < ");
-      BluetoothSerial.println(counter_lipo_voltage_ok);
+      Serial1.println("Lipo OK waiting of voltage Counter 10 < ");
+      Serial1.println(counter_lipo_voltage_ok);
       counter_lipo_voltage_ok++;
       if (counter_lipo_voltage_ok > 10)
       { // Making sure lipo voltage is stable
         counter_lipo_voltage_ok = 0;
         enable_motors();
-        BluetoothSerial.println("Lipo OK returning to RUN STATE");
+        Serial1.println("Lipo OK returning to RUN STATE");
         return RUNNING;
       }
     }
@@ -248,7 +240,7 @@ STATE stopped()
     }
 #endif
   }
-  //BluetoothSerial.println("Lipo not OK");
+  //Serial1.println("Lipo not OK");
   return STOPPED;
 }
 
@@ -310,27 +302,27 @@ boolean is_battery_voltage_OK()
   if (Lipo_level_cal > 0 && Lipo_level_cal < 160)
   {
     previous_millis = millis();
-    BluetoothSerial.print("Lipo level:");
-    BluetoothSerial.print(Lipo_level_cal);
-    BluetoothSerial.print("%");
-    // BluetoothSerial.print(" : Raw Lipo:");
-    // BluetoothSerial.println(raw_lipo);
-    BluetoothSerial.println("");
+    Serial1.print("Lipo level:");
+    Serial1.print(Lipo_level_cal);
+    Serial1.print("%");
+    // Serial1.print(" : Raw Lipo:");
+    // Serial1.println(raw_lipo);
+    Serial1.println("");
     Low_voltage_counter = 0;
     return true;
   }
   else
   {
     if (Lipo_level_cal < 0)
-      BluetoothSerial.println("Lipo is Disconnected or Power Switch is turned OFF!!!");
+      Serial1.println("Lipo is Disconnected or Power Switch is turned OFF!!!");
     else if (Lipo_level_cal > 160)
-      BluetoothSerial.println("!Lipo is Overchanged!!!");
+      Serial1.println("!Lipo is Overchanged!!!");
     else
     {
-      BluetoothSerial.println("Lipo voltage too LOW, any lower and the lipo with be damaged");
-      BluetoothSerial.print("Please Re-charge Lipo:");
-      BluetoothSerial.print(Lipo_level_cal);
-      BluetoothSerial.println("%");
+      Serial1.println("Lipo voltage too LOW, any lower and the lipo with be damaged");
+      Serial1.print("Please Re-charge Lipo:");
+      Serial1.print(Lipo_level_cal);
+      Serial1.println("%");
     }
 
     Low_voltage_counter++;

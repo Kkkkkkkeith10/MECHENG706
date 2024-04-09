@@ -21,7 +21,7 @@ STATE running()
   // Serial.println(movement_phase);
   // // char message[4];
   // // dtostrf(movement_phase,6,0,message);
-  // // BluetoothSerial.println(message);
+  // // Serial1.println(message);
   //   char message[10] = "Hello";
   //   dtostrf(sonar_average,6,2,message);
   //   Serial.print(message);

@@ -1,20 +1,6 @@
 //this file contains functions for finding the corner 
 //It does so by measuring the distance of the sonar, until the rate of change of distance has an inflexion point, this is then the corner
 
-void find_normal()
-{
-  if (sonar_average-sonar_average_prev1 < 0 )
-  {
-    //keep turning
-    ccw();
-  }
-  else
-  {
-    stop();
-    //movement_phase = 1;
-  }
-
-}
 
 
   // if (millis() - previous_millis_sonar_read > 110)
@@ -33,8 +19,45 @@ void find_normal()
 
 
 
-// void scan_until_normal()
-// {
+void find_normal()
+{
+  float millis_prev = 0;
+  bool found_normal = false;
+  //initialize it spinning
+  ccw_low();
+  delay(200);
+
+  //while not found normal
+  while (bool found_normal = false)
+  {
+    //update sonar reading every 10ms
+    if (millis() - millis_prev > 10)
+    {
+      sonar_reading_prev2 = sonar_reading_prev1;
+      sonar_reading_prev1 = sonar_reading;
+      sonar_reading = HC_SR04_range(); //sonar read
+      //update the average reading of the sensor
+      sonar_average_prev1 = sonar_average;
+      sonar_average = (sonar_reading_prev2 + sonar_reading_prev1 + sonar_reading)/3;
+    }
+
+    if (sonar_average > sonar_average_prev1)
+    {
+      //do nothing
+    }
+    else
+    {
+      stop();
+      found_normal = true;
+      movement_phase = 1;
+    }
+    char message[8];
+    dtostrf((sonar_average-sonar_average_prev1),6,2,message);
+    Serial1.println(message);
+
+  }
+}
+
 //   float threathod = 0.2;  //mm
 //   float current_ave_distance = find_average_distance();
 //   float previous_ave_distance = current_ave_distance + 1;

@@ -20,16 +20,10 @@
   Author: Logan Stuart
 */
 #include <Servo.h> //Need for Servo pulse output
-#include <SoftwareSerial.h>
 
 
 #define LOOP_DELAY 10 // miliseconds
 #define SAMPLE_DELAY 10 // miliseconds
-#define BLUETOOTH_RX 10
-// Serial Data output pin
-#define BLUETOOTH_TX 11
-
-SoftwareSerial BluetoothSerial(BLUETOOTH_RX, BLUETOOTH_TX);
 
 // Refer to Shield Pinouts.jpg for pin locations
 
@@ -85,8 +79,7 @@ void setup(void)
   pinMode(LED_BUILTIN, OUTPUT);
 
   //initilizae bluetooth comms
-  BluetoothSerial.begin(115200);
-  Serial.begin(115200);
+  Serial1.begin(115200);
 
   // setting up gyro
   pinMode(sensorPin, INPUT);
@@ -118,16 +111,16 @@ void loop(void) // main loop
     previous_millis = millis();
     char message[8];
     dtostrf(currentAngle,6,2,message);
-    BluetoothSerial.println(message);
+    Serial1.println(message);
     //Serial.println(message);
     // Serial.print(" : ");
     // Serial.println(time);
   }
 
-  if (BluetoothSerial.available() > 0)
+  if (Serial1.available() > 0)
   {
-    command = BluetoothSerial.read();
-    BluetoothSerial.println(command);
+    command = Serial1.read();
+    Serial1.println(command);
     interpret_command(command);
 
   }
