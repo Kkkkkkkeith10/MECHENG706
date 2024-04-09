@@ -3,6 +3,7 @@
 STATE running()
 {
   static unsigned long previous_millis_battery_check;
+  static unsigned long previous_millis;
 
   //check battery health every 1s
   if (millis() - previous_millis_battery_check > 1000)
@@ -15,20 +16,12 @@ STATE running()
     #endif
   }
   
-
   execute_movement_phase();
 
-  // Serial.println(movement_phase);
-  // // char message[4];
-  // // dtostrf(movement_phase,6,0,message);
-  // // Serial1.println(message);
-  //   char message[10] = "Hello";
-  //   dtostrf(sonar_average,6,2,message);
-  //   Serial.print(message);
-  //   Serial.print(":");
-  //   dtostrf(sonar_average_prev1,6,2,message);
-  //   Serial.println(message);
-
+  // if (millis() - previous_millis > 400)
+  // {
+  //   Serial1.println(movement_phase);
+  // }
 
 
   return RUNNING;

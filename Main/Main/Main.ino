@@ -84,6 +84,8 @@ double IR_sensorReadDistance(String sensor);
 void interpret_command(char command);
 float HC_SR04_range();
 void  execute_movement_phase();
+STATE running();
+
 
 
 //------------------------------------------------------------------------ Variables ------------------------------------------------------------------------//
@@ -148,6 +150,10 @@ float temp_2Y04 = 0.0;
 float sonar_reading = 0;
 float sonar_reading_prev1 = 0;
 float sonar_reading_prev2 = 0;
+float sonar_reading_prev3 = 0;
+float sonar_reading_prev4 = 0;
+float sonar_reading_prev5 = 0;
+
 float sonar_average = 0;
 float sonar_average_prev1 = 0;
 
