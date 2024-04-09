@@ -41,19 +41,17 @@ void find_normal()
       sonar_average = (sonar_reading_prev2 + sonar_reading_prev1 + sonar_reading)/3;
     }
 
-    if (sonar_average > sonar_average_prev1)
-    {
-      //do nothing
-    }
-    else
-    {
-      stop();
-      found_normal = true;
-      movement_phase = 1;
-    }
-    char message[8];
-    dtostrf((sonar_average-sonar_average_prev1),6,2,message);
-    Serial1.println(message);
+    // if (sonar_average > sonar_average_prev1)
+    // {
+    //   //do nothing
+    // }
+    // else
+    // {
+    //   stop();
+    //   found_normal = true;
+    //   movement_phase = 1;
+    // }
+    Serial1.println(sonar_average-sonar_average_prev1);
 
   }
 }

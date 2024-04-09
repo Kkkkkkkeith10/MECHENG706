@@ -302,12 +302,12 @@ boolean is_battery_voltage_OK()
   if (Lipo_level_cal > 0 && Lipo_level_cal < 160)
   {
     previous_millis = millis();
-    Serial1.print("Lipo level:");
-    Serial1.print(Lipo_level_cal);
-    Serial1.print("%");
-    // Serial1.print(" : Raw Lipo:");
-    // Serial1.println(raw_lipo);
-    Serial1.println("");
+    // Serial1.print("Lipo level:");
+    // Serial1.print(Lipo_level_cal);
+    // Serial1.print("%");
+    // // Serial1.print(" : Raw Lipo:");
+    // // Serial1.println(raw_lipo);
+    // Serial1.println("");
     Low_voltage_counter = 0;
     return true;
   }
