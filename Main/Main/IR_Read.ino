@@ -45,7 +45,7 @@ double IR_sensorReadDistance(String sensor)
   }
   else
   {
-    SerialCom->println("Invalid sensor");
+    BluetoothSerial.println("Invalid sensor");
     distance = 0;
   }
   return distance;

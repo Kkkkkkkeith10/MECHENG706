@@ -57,6 +57,8 @@ void readGyro1()
     float angleChange = -angularVelocity * (GyroTimeNow - GyroTimePrevious);
     currentAngle += angleChange -0.003;
   }
-  SerialCom->println(currentAngle);
+  char message[8];
+  dtostrf(currentAngle,6,2,message);
+  BluetoothSerial.println(currentAngle);
   GyroTimePrevious = GyroTimeNow;
 }

@@ -10,23 +10,23 @@ void turnAngleWithGyro(float angle, float millisecond)
   while (millis() < timeAtDestination)
   {
     readGyro();
-    SerialCom->print(currentAngle);
-    SerialCom->print(" ");
+    BluetoothSerial.print(currentAngle);
+    BluetoothSerial.print(" ");
 
     if ((currentAngle < (torlance + target)) && (currentAngle > (-torlance + target)))
     {
       forward();
-      SerialCom->println("forward");
+      BluetoothSerial.println("forward");
     }
     else if ((currentAngle > (torlance + target)) && (currentAngle < (180 + target)))
     {
       ccw();
-      SerialCom->println("ccw");
+      BluetoothSerial.println("ccw");
     }
     else
     {
       cw();
-      SerialCom->println("cw");
+      BluetoothSerial.println("cw");
     }
 
     delay(40);
@@ -43,7 +43,7 @@ void trunDegree(float TargetAngle_Degree )
   currentAngle =0;
   while ((currentAngle < TargetAngle_Degree - torlance) || (currentAngle > TargetAngle_Degree + torlance))
   {
-    SerialCom->println(currentAngle);
+    BluetoothSerial.println(currentAngle);
     readGyro1();
     if(currentAngle < TargetAngle_Degree - torlance){
       ccw();

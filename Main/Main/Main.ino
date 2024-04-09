@@ -31,6 +31,7 @@ enum STATE
   STOPPED
 };
 
+
 #define BLUETOOTH_RX 10
 // Serial Data output pin
 #define BLUETOOTH_TX 11
@@ -64,12 +65,10 @@ void resetGyro();
 void homing_normal_system(bool use_Gyro, bool use_sonar, bool use_left_side_IRs, bool use_right_side_IRs, float tolarence);
 void findCorner();
 void move_along_wall(bool use_Gyro, bool use_sonar, bool use_left_side_IRs, bool use_right_side_IRs, float tolarence);
-void homeStateMachine(int adress);
 void checkForLongSide();
 void ccw_low();
 void cw_low();
 void MoveStraightPID(float Power);
-void stateMachine(int adress);
 void turnAngleWithGyro(float angle, float millisecond);
 void driveStrightUntilDistance(int cm);
 void driveStringhtForDistance(int cm);
@@ -91,8 +90,10 @@ void Car_Move_withIRSensor(String left_front_IR, String left_back_IR, String rig
 double IR_sensorReadDistance(String sensor);
 void interpret_command(char command);
 float HC_SR04_range();
+void  execute_movement_phase();
 
 
+//------------------------------------------------------------------------ Variables ------------------------------------------------------------------------//
 
 
 // Anything over 400 cm (23200 us pulse) is "out of range". Hit:If you decrease to this the ranging sensor but the timeout is short, you may not need to read up to 4meters.
@@ -141,9 +142,8 @@ float currentAngle = 0; // current angle calculated by angular velocity integral
 float GyroTimePrevious = 0.0;
 float GyroTimeNow = 0.0;
 
-
-// statemachine
 int currentState = 0;
+int movement_phase = 0; //use for flow control of the robots programmed movement
 
 //IR Readings
 float temp_4102 = 0.0;
@@ -151,15 +151,11 @@ float temp_4103 = 0.0;
 float temp_2Y02 = 0.0;
 float temp_2Y04 = 0.0;
 
-// Serial Pointer
-HardwareSerial *SerialCom;
 
 int pos = 0;
 
 int i;
 float sum = 0;
-
-
 
 
 
@@ -175,22 +171,22 @@ void setup(void)
   BluetoothSerial.begin(115200);
 
 
-  // // setting up gyro
-
-  // pinMode(sensorPin, INPUT);
-  // Serial.println("please keep the sensor still for calibration");
-  // Serial.println("get the gyro zero voltage");
-  // for (i = 0; i < 100; i++) // read 100 values of voltage when gyro is at still, to calculate the zero-drift
-  // {
-  //   sensorValue = analogRead(sensorPin);
-  //   sum += sensorValue;
-  //   delay(5);
-  // }
-  // gyroZeroVoltage = sum / 100; // average the sum as the zero drifting
+  // setting up gyro
+  pinMode(sensorPin, INPUT);
+  BluetoothSerial.println("please keep the sensor still for calibration");
+  BluetoothSerial.println("get the gyro zero voltage");
+  for (i = 0; i < 100; i++) // read 100 values of voltage when gyro is at still, to calculate the zero-drift
+  {
+    sensorValue = analogRead(sensorPin);
+    sum += sensorValue;
+    delay(5);
+  }
+  gyroZeroVoltage = sum / 100; // average the sum as the zero drifting
 
   delay(1000); // settling time but no really needed
 }
 
+//NO TOUCH
 void loop(void) // main loop
 {
   static STATE machine_state = INITIALISING;
@@ -200,53 +196,8 @@ void loop(void) // main loop
   case INITIALISING:
     machine_state = initialising();
     break;
-  case RUNNING: // Lipo Battery Volage OK
-                // machine_state =  running();
-                // BluetoothSerial.println(String(currentAngle));
-                // BluetoothSerial.print(String(currentAngle));
-                // BluetoothSerial.print("\n");
-
-    // driveStrightWithGyro(6000);
-    // delay(5);
-    // break; 
-  //    if (millis() - previous_millis > 200) //only send every 200ms
-  // {
-  //   previous_millis = millis();
-  //   char message[8];
-  //   dtostrf(currentAngle,6,2,message);
-  //   BluetoothSerial.println(message);
-  //   //Serial.println(message);
-  //   // Serial.print(" : ");
-  //   // Serial.println(time);
-  // }
-
-  // if (BluetoothSerial.available() > 0)
-  // {
-  //   command = BluetoothSerial.read();
-  //   BluetoothSerial.println(command);
-  //   interpret_command(command);
-
-  // }
-  // while(true)
-  // {
-  //   //MoveStraightAlongAngle(0,100);
-  //   stateMachine(currentState);
-  // }
-  while(true){
-    if(currentState<=8){
-      homeStateMachine(currentState);
-    }
-    else{
-      stateMachine(currentState);
-    }
-    
-  }
-  break;
-  
-
-    // stateMachine(currentState);
-    // break;
-
+  case RUNNING:
+    machine_state = running();
   case STOPPED: // Stop of Lipo Battery voltage is too low, to protect Battery
     machine_state = stopped();
     break;
@@ -275,52 +226,6 @@ STATE initialising()
     delay(5);
   }
   gyroZeroVoltage = sum / 100; // average the sum as the zero drifting
-
-  return RUNNING;
-}
-
-STATE running()
-{
-  // // read_serial_command();
-  // fast_flash_double_LED_builtin();
-
-  //check battery is ok
-  #ifndef NO_BATTERY_V_OK
-    if (!is_battery_voltage_OK())
-      return STOPPED;
-  #endif
-
-//get sensor readings using timed statement
-  static unsigned long previous_millis;
-  if (millis() - previous_millis > 500)
-  { // Arduino style 500ms timed execution statement
-    previous_millis = millis();
-
-    #ifndef NO_READ_GYRO
-    //read gyro here
-    //GYRO_reading();
-    #endif
-
-    #ifndef NO_HC - SR04
-        HC_SR04_range(); //sonar read
-    #endif
-
-    //BluetoothSerial.println("RUNNING---------");
-    //speed_change_smooth();
-    //Analog_Range_A4();
-  }
-
-  //   turret_motor.write(pos);
-
-  //   if (pos == 0)
-  //   {
-  //     pos = 45;
-  //   }
-  //   else
-  //   {
-  //     pos = 0;
-  //   }
-  // }
 
   return RUNNING;
 }
