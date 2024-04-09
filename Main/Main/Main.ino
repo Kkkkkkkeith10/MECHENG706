@@ -139,17 +139,24 @@ float rotationThreshold = 1.5; // because of gyro drifting, defining rotation an
 // this value will not be ignored
 float gyroRate = 0;     // read out value of sensor in voltage
 float currentAngle = 0; // current angle calculated by angular velocity integral on
-float GyroTimePrevious = 0.0;
-float GyroTimeNow = 0.0;
+float GyroTimeNow = 0;
+float GyroTimePrevious = 0;
 
-int currentState = 0;
 int movement_phase = 0; //use for flow control of the robots programmed movement
+int currentState = 0;
 
 //IR Readings
 float temp_4102 = 0.0;
 float temp_4103 = 0.0;
 float temp_2Y02 = 0.0;
 float temp_2Y04 = 0.0;
+
+//Sonar Readings
+float sonar_reading = 0;
+float sonar_reading_prev1 = 0;
+float sonar_reading_prev2 = 0;
+float sonar_average = 0;
+float sonar_average_prev1 = 0;
 
 
 
@@ -165,6 +172,7 @@ void setup(void)
 
   //bluetooth on
   BluetoothSerial.begin(115200);
+  Serial.begin(115200);
 
   // setting up gyro
   pinMode(sensorPin, INPUT);
@@ -184,10 +192,11 @@ void loop(void) // main loop
     break;
   case RUNNING:
     machine_state = running();
+    break;
   case STOPPED: // Stop of Lipo Battery voltage is too low, to protect Battery
     machine_state = stopped();
     break;
-  };
+  }
 }
 
 STATE initialising()
@@ -222,7 +231,7 @@ STATE stopped()
     // 500ms timed if statement to check lipo and output speed settings
     if (is_battery_voltage_OK())
     {
-      BluetoothSerial.print("Lipo OK waiting of voltage Counter 10 < ");
+      BluetoothSerial.println("Lipo OK waiting of voltage Counter 10 < ");
       BluetoothSerial.println(counter_lipo_voltage_ok);
       counter_lipo_voltage_ok++;
       if (counter_lipo_voltage_ok > 10)
@@ -239,6 +248,7 @@ STATE stopped()
     }
 #endif
   }
+  //BluetoothSerial.println("Lipo not OK");
   return STOPPED;
 }
 

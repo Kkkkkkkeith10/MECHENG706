@@ -41,8 +41,10 @@ void resetGyro()
   gyroZeroVoltage = sum / 100; // average the sum as the zero drifting
 }
 
-void readGyro1(float timeDif)
+void readGyro1()
 {
+
+  GyroTimeNow = (float)millis() / 1000;
   gyroRate = (analogRead(sensorPin) * gyroSupplyVoltage) / 1023; // find the voltage offset the value of voltage when gyro is zero (still)
   gyroRate -= (gyroZeroVoltage / 1023 * 5); //5 is the number of ms delay the gryozerovoltage is taken over
   float angularVelocity = gyroRate / gyroSensitivity; // read out voltage divided the gyro sensitivity to calculate the angular velocity
@@ -50,7 +52,8 @@ void readGyro1(float timeDif)
   if (angularVelocity >= rotationThreshold || angularVelocity <= -rotationThreshold)
   {
     // we are running a loop in T. one second will run (1000/T).
-    float angleChange = -angularVelocity * (timeDif); //calculate the angle change based on the angular velocity
+    float angleChange = -angularVelocity * (GyroTimeNow - GyroTimePrevious); //calculate the angle change based on the angular velocity
     currentAngle += angleChange -0.003; //0.003 is a compensation factor obtained through tuning
   }
+  GyroTimePrevious = GyroTimeNow;
 }

@@ -22,7 +22,7 @@ float HC_SR04_range()
     pulse_width = t2 - t1;
     if (pulse_width > (MAX_DIST + 1000))
     {
-      BluetoothSerial.println("HC-SR04: NOT found");
+      // BluetoothSerial.println("HC-SR04: NOT found");
       return;
     }
   }
@@ -37,7 +37,7 @@ float HC_SR04_range()
     pulse_width = t2 - t1;
     if (pulse_width > (MAX_DIST + 1000))
     {
-      BluetoothSerial.println("HC-SR04: Out of range");
+      // BluetoothSerial.println("HC-SR04: Out of range");
       return;
     }
   }
@@ -54,14 +54,14 @@ float HC_SR04_range()
   // Print out results
   if (pulse_width > MAX_DIST)
   {
-    BluetoothSerial.println("HC-SR04: Out of range");
+    // BluetoothSerial.println("HC-SR04: Out of range");
   }
   else
   {
-    char message[8];
-    BluetoothSerial.println("HC-SR04:");
-    dtostrf(cm,6,2,message);
-    BluetoothSerial.println(message);
+    // char message[8];
+    // BluetoothSerial.println("HC-SR04:");
+    // dtostrf(cm,6,2,message);
+    // BluetoothSerial.println(message);
   }
 
   return cm;
