@@ -29,7 +29,8 @@ void readGyro()
 
 void resetGyro()
 {
-  for (i = 0; i < 100; i++) // read 100 values of voltage when gyro is at still, to calculate the zero-drift
+  int sum = 0;
+  for (int i = 0; i < 100; i++) // read 100 values of voltage when gyro is at still, to calculate the zero-drift
   {
     sensorValue = analogRead(sensorPin);
     sum += sensorValue;

@@ -152,11 +152,6 @@ float temp_2Y02 = 0.0;
 float temp_2Y04 = 0.0;
 
 
-int pos = 0;
-
-int i;
-float sum = 0;
-
 
 
 void setup(void)
@@ -168,20 +163,11 @@ void setup(void)
   pinMode(TRIG_PIN, OUTPUT);
   digitalWrite(TRIG_PIN, LOW);
 
+  //bluetooth on
   BluetoothSerial.begin(115200);
-
 
   // setting up gyro
   pinMode(sensorPin, INPUT);
-  BluetoothSerial.println("please keep the sensor still for calibration");
-  BluetoothSerial.println("get the gyro zero voltage");
-  for (i = 0; i < 100; i++) // read 100 values of voltage when gyro is at still, to calculate the zero-drift
-  {
-    sensorValue = analogRead(sensorPin);
-    sum += sensorValue;
-    delay(5);
-  }
-  gyroZeroVoltage = sum / 100; // average the sum as the zero drifting
 
   delay(1000); // settling time but no really needed
 }
@@ -211,14 +197,8 @@ STATE initialising()
   // delay(1000); // One second delay to see the serial String "INITIALISING...."
   BluetoothSerial.println("Enabling Motors...");
   enable_motors();
-  BluetoothSerial.println("RUNNING STATE...");
-
-  // setting up gyro
-  // int i;
-  // float sum = 0;
-  // pinMode(sensorPin, INPUT);
   BluetoothSerial.println("please keep the sensor still for calibration");
-  BluetoothSerial.println("get the gyro zero voltage");
+  //BluetoothSerial.println("get the gyro zero voltage");
   resetGyro();
 
   return RUNNING;
