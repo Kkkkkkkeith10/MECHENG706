@@ -29,8 +29,6 @@ void readGyro()
 
 void resetGyro()
 {
-  Serial.println("please keep the sensor still for calibration");
-  Serial.println("get the gyro zero voltage");
   for (i = 0; i < 100; i++) // read 100 values of voltage when gyro is at still, to calculate the zero-drift
   {
     sensorValue = analogRead(sensorPin);

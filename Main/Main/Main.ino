@@ -217,15 +217,9 @@ STATE initialising()
   // int i;
   // float sum = 0;
   // pinMode(sensorPin, INPUT);
-  Serial.println("please keep the sensor still for calibration");
-  Serial.println("get the gyro zero voltage");
-  for (i = 0; i < 100; i++) // read 100 values of voltage when gyro is at still, to calculate the zero-drift
-  {
-    sensorValue = analogRead(sensorPin);
-    sum += sensorValue;
-    delay(5);
-  }
-  gyroZeroVoltage = sum / 100; // average the sum as the zero drifting
+  BluetoothSerial.println("please keep the sensor still for calibration");
+  BluetoothSerial.println("get the gyro zero voltage");
+  resetGyro();
 
   return RUNNING;
 }

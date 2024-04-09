@@ -29,14 +29,16 @@ STATE running()
   //read IR every 100ms
   if (millis() - previous_millis_ir_read > 100)
   {
-
+    previous_millis_ir_read = millis();
+    //read the IR sensors in here
   }
 
   //read sonar every 110ms
   if (millis() - previous_millis_sonar_read > 110)
   {
-      #ifndef NO_HC - SR04
-        HC_SR04_range(); //sonar read
+    previous_millis_sonar_read = millis();
+    #ifndef NO_HC - SR04
+    HC_SR04_range(); //sonar read
     #endif
   }
 
