@@ -20,12 +20,18 @@ STATE running()
   //read gyro every 10ms
   if (millis() - previous_millis_gyro_read > 10)
   { // Arduino style 500ms timed execution statement
-    previous_millis_gyro_read = millis(); //previous time the gryo was read
     #ifndef NO_READ_GYRO
     //read gyro here
     //GYRO_reading();
+    readGyro1(10);
+    previous_millis_gyro_read = millis(); //previous time the gryo was read
     #endif
+    // char message[8];
+    // dtostrf(currentAngle,6,2,message);
+    // BluetoothSerial.println(currentAngle);
   }
+
+
   //read IR every 100ms
   if (millis() - previous_millis_ir_read > 100)
   {
