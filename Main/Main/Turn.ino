@@ -2,14 +2,14 @@
 
 void turnAngleWithGyro(float angle, float millisecond)
 {
-  readGyro();
+  readGyroTurn();
   float target = currentAngle + angle;
   float torlance = 10; // degree
   unsigned long timeAtDestination = millis() + millisecond;
 
   while (millis() < timeAtDestination)
   {
-    readGyro();
+    readGyroTurn();
     Serial1.print(currentAngle);
     Serial1.print(" ");
 
@@ -43,8 +43,9 @@ void trunDegree(float TargetAngle_Degree )
   currentAngle =0;
   while ((currentAngle < TargetAngle_Degree - torlance) || (currentAngle > TargetAngle_Degree + torlance))
   {
+    //Serial1.println(currentAngle);
+    readGyroTurn();
     Serial1.println(currentAngle);
-    readGyro1();
     if(currentAngle < TargetAngle_Degree - torlance){
       ccw();
     }else{
@@ -54,5 +55,5 @@ void trunDegree(float TargetAngle_Degree )
   stop();
 
   
-  currentState++;
+  movement_phase++;
 }

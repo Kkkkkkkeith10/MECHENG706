@@ -125,7 +125,7 @@ float torlance = 10.0;         // degree
 
 
 // gyro
-int sensorPin = A2;            // define the pin that gyro is connected
+int sensorPin = A7;            // define the pin that gyro is connected
 int sensorValue = 0;           // read out value of sensor
 float gyroSupplyVoltage = 5;   // supply voltage for gyro
 float gyroZeroVoltage = 0;     // the value of voltage when gyro is zero

@@ -81,3 +81,54 @@ void find_normal()
 
 
 
+void scan_until_normal()
+{
+  float threathod = 0.2;  //mm
+  float current_ave_distance = find_average_distance();
+  float previous_ave_distance = current_ave_distance + 1;
+
+  ccw_low();
+  delay(200);
+  stop();
+  while ((current_ave_distance - previous_ave_distance) < threathod)
+  {
+    ccw_low();
+    delay(100);
+    stop();
+    previous_ave_distance = current_ave_distance;
+    current_ave_distance = find_average_distance();
+  }
+  stop();
+
+  cw_low();
+  delay(200);
+  stop();
+  previous_ave_distance = current_ave_distance;
+  current_ave_distance = find_average_distance();
+  while((current_ave_distance - previous_ave_distance) < threathod)
+  {
+    cw_low();
+    delay(100);
+    stop();
+    previous_ave_distance = current_ave_distance;
+    current_ave_distance = find_average_distance();
+  }
+  stop();
+  movement_phase++;
+}
+
+float find_average_distance()
+{
+  float distances = 0.0;
+  float reading;
+  int i = 0;
+  for (i = 0; i <= 9; i++)
+  {
+    reading = HC_SR04_range();
+    distances += reading;
+    delay(5);
+  }
+  distances = distances/10;
+  return distances;
+}
+

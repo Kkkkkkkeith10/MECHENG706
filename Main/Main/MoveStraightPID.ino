@@ -21,11 +21,11 @@ void MoveStraightPID(float Power)
   SVRR = saturation(SVRR);
   SVLF = saturation(SVLF);
   SVLR = saturation(SVLR);
+  // Serial1.print("currentAngle: ");
+  // Serial1.print(currentAngle);
+  // Serial1.print("ErrorAngle_Degree: ");
+  // Serial1.println(ErrorAngle_Degree);
 
-  // Serial.println(currentAngle);
-  // Serial.print(" ");
-  // Serial.print(ErrorAngle_Degree);
-  // Serial.print(" ");
   // Serial.print(SV_P);
   // Serial.print(" ");
   // Serial.print(1500 + SVRR);
@@ -121,21 +121,24 @@ void driveStrightUntilDistance(int cm)
 {
   readGyro1();
   currentAngle=0;
+
   float torlance = 0.5; // degree
   
-
+  
   while (HC_SR04_range() > cm)
   {
+     // Serial1.print(currentAngle);
+    //Serial1.println(HC_SR04_range());
     MoveStraightPID(100);
     delay(20);
   }
-  currentState++;
+  movement_phase++;
   stop();
 }
 
 void driveStringhtForDistance(int cm)
 {
-  readGyro();
+  readGyro1();
   currentAngle=0;
   float torlance = 3; // degree
   float currentDistance = HC_SR04_range();
@@ -144,7 +147,7 @@ void driveStringhtForDistance(int cm)
   {
     MoveStraightAlongAngle(0, 100);
   }
-  currentState++;
+  movement_phase++;
   stop();
 }
 
