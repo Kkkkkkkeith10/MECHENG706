@@ -38,6 +38,7 @@ void turnAngleWithGyro(float angle, float millisecond)
 
 void trunDegree(float TargetAngle_Degree )
 {
+  //Serial1.println(movement_phase);
   float Power = 100;
   float torlance = 0.5;
   currentAngle =0;
@@ -45,7 +46,7 @@ void trunDegree(float TargetAngle_Degree )
   {
     //Serial1.println(currentAngle);
     readGyroTurn();
-    Serial1.println(currentAngle);
+    //Serial1.println(currentAngle);
     if(currentAngle < TargetAngle_Degree - torlance){
       ccw();
     }else{

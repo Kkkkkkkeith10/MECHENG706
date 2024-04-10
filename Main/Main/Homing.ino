@@ -8,42 +8,39 @@ void homing_normal_system(bool use_Gyro, bool use_sonar, bool use_left_side_IRs,
   //use_Gyro will reset the gyro
   //currently no sonar related actions are done
   
+    Serial1.print(movement_phase);
   
   
-  
-    temp_4103 = IR_sensorReadDistance("41_03");
-    temp_2Y02 = IR_sensorReadDistance("2Y_02") + 15;
+    temp_4102 = IR_sensorReadDistance("41_02");
+    temp_2Y04 = IR_sensorReadDistance("2Y_04");
     
 
 
-    while(temp_4103 <30.0 && temp_2Y02 <30.0){
+    while(temp_4102 <30.0 && temp_2Y04 <30.0){
       ccw();
-      Serial.print("cw");
+      Serial1.print("cw");
     }
-      while((temp_4103 - temp_2Y02) > tolarence)
-      {
-        cw_low();
-        Serial.print("cw low");
-        temp_4103 = IR_sensorReadDistance("41_03");
-        temp_2Y02 = IR_sensorReadDistance("2Y_02") + 13.0;
-        Serial1.print("temp_4103: ");
-        Serial1.print(temp_4103);
-        Serial1.print("temp_2Y02: ");
-        Serial1.println(temp_2Y02);
-      }
-      stop();
-      while((temp_2Y02 - temp_4103) > tolarence)
-      {
+    while((temp_4102 - temp_2Y04) > tolarence || (temp_2Y04 - temp_4102) > tolarence)
+    {
+      if((temp_4102 - temp_2Y04)>0){
         ccw_low();
-        Serial.print("ccw low");
-        temp_4103 = IR_sensorReadDistance("41_03");
-        temp_2Y02 = IR_sensorReadDistance("2Y_02") + 13.0;
-        Serial1.print("temp_4103: ");
-        Serial1.print(temp_4103);
-        Serial1.print("temp_2Y02: ");
-        Serial1.println(temp_2Y02);
+        Serial1.print("cw low");
       }
-      stop();
+      else{
+        cw_low();
+        Serial1.print("ccw low");
+      }
+       
+
+      
+      temp_4102 = IR_sensorReadDistance("41_03");
+      temp_2Y04 = IR_sensorReadDistance("2Y_02");
+      Serial1.print("temp_4102: ");
+      Serial1.print(temp_4102);
+      Serial1.print("temp_2Y04: ");
+      Serial1.println(temp_2Y04);
+    }
+    stop();
     
     
   
@@ -67,7 +64,7 @@ float VALUE_2Y02 = 0.0;
 
 float Kp_IR_dif = 10;
 float Kp_IR_abs = 15;
-float threathod_IR = 1000;
+float threathod_IR = 10000;
 
 
 
@@ -124,10 +121,10 @@ void moving_alone_wall_until_cm(int until_distance,float target_distance, bool u
     SVLR = saturation(-500 + temp_SV + turn_C);
 
 
-    Serial.print(VALUE_4102);
-    Serial.print(" ");
-    Serial.print(VALUE_2Y04);
-    Serial.print(" ");
+    // Serial.print(VALUE_4102);
+    // Serial.print(" ");
+    // Serial.print(VALUE_2Y04);
+    // Serial.print(" ");
     // Serial.print(temp_SV);
     // Serial.print(" ");
     // Serial.print(temp_SV);
@@ -156,5 +153,6 @@ void moving_alone_wall_until_cm(int until_distance,float target_distance, bool u
     delay(20);
   }
   stop();
+  movement_phase++;
 }
 
