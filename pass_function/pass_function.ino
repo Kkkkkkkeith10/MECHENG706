@@ -226,7 +226,10 @@ float find_average_distance()
 
 
 
-
+float VALUE_2Y04 = 0.0;
+float VALUE_4102 = 0.0;
+float VALUE_4103 = 0.0;
+float VALUE_2Y02 = 0.0;
 
 float Kp_IR_dif = 15;
 float Kp_IR_abs = 10;
