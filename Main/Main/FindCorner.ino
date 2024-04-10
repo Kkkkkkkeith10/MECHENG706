@@ -88,12 +88,12 @@ void scan_until_normal()
   float previous_ave_distance = current_ave_distance + 1;
 
   ccw_low();
-  delay(200);
+  delay(50);
   stop();
   while ((current_ave_distance - previous_ave_distance) < threathod)
   {
     ccw_low();
-    delay(100);
+    delay(20);
     stop();
     previous_ave_distance = current_ave_distance;
     current_ave_distance = find_average_distance();
@@ -108,7 +108,7 @@ void scan_until_normal()
   while((current_ave_distance - previous_ave_distance) < threathod)
   {
     cw_low();
-    delay(100);
+    delay(20);
     stop();
     previous_ave_distance = current_ave_distance;
     current_ave_distance = find_average_distance();

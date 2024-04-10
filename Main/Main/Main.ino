@@ -103,7 +103,7 @@ Servo turret_motor;
 //Speed and motor movement
 int speed_val = 500;
 int speed_change;
-int speed_val_low = 100;
+int speed_val_low = 200;
 
 //PID
 int KP = 100;
