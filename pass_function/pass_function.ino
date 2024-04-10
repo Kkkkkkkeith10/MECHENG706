@@ -334,3 +334,75 @@ while (HC_SR04_range() > cm)
   }
   stop();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+double IR_sensorReadDistance(String sensor)
+// input can be : "//41_01", "41_02", "41_03", "//2Y_01", "2Y_02", "//2Y_03", "2Y_04",
+// return distance in mm
+{
+  double distance;
+  double sensor_value;
+  // if (sensor == "41_01")  //old
+  // {
+  //   sensor_value = analogRead(IR_41_01);
+  //   distance = 27592 * pow(sensor_value, -1.018);
+  // }
+  // if (sensor == "41_02")  //old
+  // {
+  //   sensor_value = analogRead(IR_41_02);
+  //   distance = 7935.4 * pow(sensor_value, -0.827);
+  // }
+  if (sensor == "41_02")  //new
+  {
+    sensor_value = analogRead(IR_41_02);
+    distance = 21147 * pow(sensor_value, -0.985)  - 7;
+  }
+  else if (sensor == "41_03") //old
+  {
+    sensor_value = analogRead(IR_41_03);
+    distance = 30119 * pow(sensor_value, -1.039);
+  }
+  // else if(sensor == "2Y_01") //old
+  // {
+  //   sensor_value = analogRead(IR_2Y_01);
+  //   distance = 1888777 * pow(sensor_value, -1.237);
+  // }
+  else if (sensor == "2Y_02") //old
+  {
+    sensor_value = analogRead(IR_2Y_02);
+    distance = 92838 * pow(sensor_value, -1.097);
+  }
+  // else if(sensor = "2Y_03") //old
+  // {
+  //   sensor_value = analogRead(IR_2Y_03);
+  //   distance = 7927.4 * pow(sensor_value, -0.687);
+  // }
+  // else if (sensor = "2Y_04") //old
+  // {
+  //   sensor_value = analogRead(IR_2Y_04);
+  //   distance = 50857 * pow(sensor_value, -0.994);
+  // }
+  else if (sensor = "2Y_04") //new
+  {
+    sensor_value = analogRead(IR_2Y_04);
+    distance = 155559 * pow(sensor_value, -1.185) + 5;
+  }
+  else
+  {
+    SerialCom->println("Invalid sensor");
+    distance = 0;
+  }
+  return distance;
+}
+
