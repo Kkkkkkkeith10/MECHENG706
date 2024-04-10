@@ -231,8 +231,8 @@ float VALUE_4102 = 0.0;
 float VALUE_4103 = 0.0;
 float VALUE_2Y02 = 0.0;
 
-float Kp_IR_dif = 15;
-float Kp_IR_abs = 10;
+float Kp_IR_dif = 10;
+float Kp_IR_abs = 15;
 float threathod_IR = 1000;
 
     while(true)
@@ -249,7 +249,7 @@ float threathod_IR = 1000;
       delay(100);
     }
 
-void moving_alone_wall(float target_distance, bool using_gyro, bool use_left_side_IRs, bool use_right_side_IRs)
+void moving_alone_wall_until_cm(int until_distance,float target_distance, bool using_gyro, bool use_left_side_IRs, bool use_right_side_IRs)
 {
   //This function mainly using two IR sensors to making the robot moving parallal with the wall.
   //use left or right side IRs to make the system parallel to the wall, only one side can be used at a sigle call
@@ -258,7 +258,13 @@ void moving_alone_wall(float target_distance, bool using_gyro, bool use_left_sid
   //The input is the target distance between the robot and the wall
   //%%%%This function using global sensor readings%%%%
   //%%%%This function needs to be called in a loop%%%%
+  VALUE_2Y04 = IR_sensorReadDistance("2Y_04");
+  VALUE_4102 = IR_sensorReadDistance("41_02");
+  VALUE_4103 = IR_sensorReadDistance("41_03");
+  VALUE_2Y02 = IR_sensorReadDistance("2Y_02");
 
+while (HC_SR04_range() > cm)
+  {
   int temp_SV = 0;
   int turn_C = 0;
 
@@ -324,4 +330,7 @@ void moving_alone_wall(float target_distance, bool using_gyro, bool use_left_sid
 
   //ccw == all (-)
   //cw === all (+)
+  delay(100);
+  }
+  stop();
 }
