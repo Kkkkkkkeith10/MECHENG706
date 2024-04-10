@@ -212,3 +212,113 @@ float find_average_distance()
   distances = distances/10;
   return distances;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+float Kp_IR_dif = 15;
+float Kp_IR_abs = 10;
+float threathod_IR = 1000;
+
+    while(true)
+    {
+      // input can be : "//41_01", "41_02", "41_03", "//2Y_01", "2Y_02", "//2Y_03", "2Y_04",
+      // return distance in mm
+      VALUE_2Y04 = IR_sensorReadDistance("2Y_04");
+      VALUE_4102 = IR_sensorReadDistance("41_02");
+      VALUE_4103 = IR_sensorReadDistance("41_03");
+      VALUE_2Y02 = IR_sensorReadDistance("2Y_02");
+
+      //moving_alone_wall(float target_distance, bool using_gyro, bool use_left_side_IRs, bool use_right_side_IRs)
+      moving_alone_wall(100, 0, 1, 0);
+      delay(100);
+    }
+
+void moving_alone_wall(float target_distance, bool using_gyro, bool use_left_side_IRs, bool use_right_side_IRs)
+{
+  //This function mainly using two IR sensors to making the robot moving parallal with the wall.
+  //use left or right side IRs to make the system parallel to the wall, only one side can be used at a sigle call
+  //IR sensors groups are:     use_left_side_IRs: 41_02 & 2Y_04         use_right_side_IRs: 41_03 & 2Y_02
+  //Gyro is also used as help, set [using_gyro] as TRUE to enable gyro 
+  //The input is the target distance between the robot and the wall
+  //%%%%This function using global sensor readings%%%%
+  //%%%%This function needs to be called in a loop%%%%
+
+  int temp_SV = 0;
+  int turn_C = 0;
+
+  if(use_left_side_IRs)
+  {
+    if(abs(VALUE_2Y04 - VALUE_4102) > threathod_IR)
+    {
+      turn_C = 500*(VALUE_2Y04 - VALUE_4102);
+    }
+    else
+    {
+      temp_SV = (int)(Kp_IR_dif*(VALUE_2Y04 - VALUE_4102) + Kp_IR_abs*(target_distance - (VALUE_2Y04 + VALUE_4102)/2));
+    }
+  }
+  else if(use_right_side_IRs)
+  {
+    if(abs(VALUE_4103 - VALUE_2Y02) > threathod_IR)
+    {
+      turn_C = 500*(VALUE_4103 - VALUE_2Y02);
+    }
+    else
+    {
+      temp_SV = (int)(Kp_IR_dif*(VALUE_4103 - VALUE_2Y02) + Kp_IR_abs*((VALUE_4103 + VALUE_2Y02)/2 - target_distance));
+    }
+  }
+  else{}
+
+  if(using_gyro){}
+
+
+  SVRF = saturation(500 + temp_SV + turn_C);
+  SVRR = saturation(500 + temp_SV + turn_C);
+  SVLF = saturation(-500 + temp_SV + turn_C);
+  SVLR = saturation(-500 + temp_SV + turn_C);
+
+
+  Serial.print(VALUE_4102);
+  Serial.print(" ");
+  Serial.print(VALUE_2Y04);
+  Serial.print(" ");
+  // Serial.print(temp_SV);
+  // Serial.print(" ");
+  // Serial.print(temp_SV);
+  // Serial.print(" ");
+  // Serial.print(temp_SV);
+  // Serial.print(" ");
+  // Serial.print(ErrorAngle_Degree);
+  // Serial.print(" ");
+  // Serial.print(SV_P);
+  // Serial.print(" ");
+  Serial.print(1500 + SVRR);
+  Serial.print(" ");
+  Serial.print(1500 + SVRF);
+  Serial.print(" ");
+  Serial.print(1500 + SVLF);
+  Serial.print(" ");
+  Serial.println(1500 + SVLR);
+
+  left_font_motor.writeMicroseconds(1500 + SVLF);
+  left_rear_motor.writeMicroseconds(1500 + SVLR);
+  right_rear_motor.writeMicroseconds(1500 + SVRR);
+  right_font_motor.writeMicroseconds(1500 + SVRF);
+
+  //ccw == all (-)
+  //cw === all (+)
+}
