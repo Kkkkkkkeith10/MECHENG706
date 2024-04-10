@@ -353,6 +353,7 @@ double IR_sensorReadDistance(String sensor)
 {
   double distance;
   double sensor_value;
+  double temp_reading = 0.0;
   // if (sensor == "41_01")  //old
   // {
   //   sensor_value = analogRead(IR_41_01);
@@ -365,8 +366,12 @@ double IR_sensorReadDistance(String sensor)
   // }
   if (sensor == "41_02")  //new
   {
-    sensor_value = analogRead(IR_41_02);
-    distance = 21147 * pow(sensor_value, -0.985)  - 7;
+    for (int i = 0; i <= 9; i++)
+    {
+      temp_reading = temp_reading + analogRead(IR_41_02);
+    }
+    sensor_value = temp_reading/10;
+    distance = 21147 * pow(sensor_value, -0.985) - 7;
   }
   else if (sensor == "41_03") //old
   {
@@ -395,7 +400,11 @@ double IR_sensorReadDistance(String sensor)
   // }
   else if (sensor = "2Y_04") //new
   {
-    sensor_value = analogRead(IR_2Y_04);
+    for (int i = 0; i <= 9; i++)
+    {
+      temp_reading = temp_reading + analogRead(IR_2Y_04);
+    }
+    sensor_value = temp_reading/10;
     distance = 155559 * pow(sensor_value, -1.185) + 5;
   }
   else
@@ -403,6 +412,8 @@ double IR_sensorReadDistance(String sensor)
     SerialCom->println("Invalid sensor");
     distance = 0;
   }
+  temp_reading = 0.0;
   return distance;
 }
+
 
