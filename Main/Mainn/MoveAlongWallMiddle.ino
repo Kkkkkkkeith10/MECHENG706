@@ -187,10 +187,10 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
     // SVLF = saturation(-500 + temp_SV_dif  + temp_SV_abs*abs_move_C);
     // SVLR = saturation(-500 + temp_SV_dif  - temp_SV_abs*abs_move_C);
 
-    SVRF = saturation(500   + temp_SV_abs*abs_move_C - temp_GV_dif*abs_move_C + temp_SV_dif);
-    SVRR = saturation(500   - temp_SV_abs*abs_move_C - temp_GV_dif*abs_move_C + temp_SV_dif);
-    SVLF = saturation(-500   + temp_SV_abs*abs_move_C - temp_GV_dif*abs_move_C + temp_SV_dif);
-    SVLR = saturation(-500   - temp_SV_abs*abs_move_C - temp_GV_dif*abs_move_C + temp_SV_dif);
+    SVRF = saturation(500   + temp_SV_abs*abs_move_C - temp_GV_dif + temp_SV_dif);
+    SVRR = saturation(500   - temp_SV_abs*abs_move_C - temp_GV_dif + temp_SV_dif);
+    SVLF = saturation(-500   + temp_SV_abs*abs_move_C - temp_GV_dif + temp_SV_dif);
+    SVLR = saturation(-500   - temp_SV_abs*abs_move_C - temp_GV_dif + temp_SV_dif);
 
     // SVRF = saturation(500   + temp_SV_abs*abs_move_C + temp_GV_dif*abs_move_C);
     // SVRR = saturation(500   - temp_SV_abs*abs_move_C + temp_GV_dif*abs_move_C);
