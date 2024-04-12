@@ -157,7 +157,14 @@ float sonar_reading_prev5 = 0;
 float sonar_average = 0;
 float sonar_average_prev1 = 0;
 
+//move along wall variables
+float Kp_IR_abs = 0;
+float Ki_IR_abs = 0;
+float Kp_IR_dif = 0;
+float Ki_IR_dif = 0;
 
+float Kp_GV_dif = 10;
+float Ki_GV_dif = 5;
 
 
 void setup(void)

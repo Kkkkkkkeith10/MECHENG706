@@ -59,7 +59,7 @@ void readGyro1()
   {
     // we are running a loop in T. one second will run (1000/T).
     float angleChange = -angularVelocity * (GyroTimeNow - GyroTimePrevious); //calculate the angle change based on the angular velocity
-    currentAngle += angleChange -0.003; //0.003 is a compensation factor obtained through tuning
+    currentAngle += angleChange; //0.003 is a compensation factor obtained through tuning
   }
   GyroTimePrevious = GyroTimeNow;
 }

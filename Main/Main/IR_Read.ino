@@ -262,7 +262,7 @@ double IR_sensorReadDistance(String sensor)
   }
   else
   {
-    SerialCom->println("Invalid sensor");
+    // SerialCom->println("Invalid sensor");
     distance = 0;
   }
   temp_reading = 0.0;

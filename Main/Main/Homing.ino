@@ -62,8 +62,11 @@ float VALUE_4102 = 0.0;
 float VALUE_4103 = 0.0;
 float VALUE_2Y02 = 0.0;
 
-float Kp_IR_dif = 10;
-float Kp_IR_abs = 15;
+float PREVIOUS_2Y04_VALUE = 0;
+float PREVIOUS_2Y02_VALUE = 0;
+
+// float Kp_IR_dif = 10;
+// float Kp_IR_abs = 15;
 float threathod_IR = 10000;
 
 

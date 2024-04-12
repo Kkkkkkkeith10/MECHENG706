@@ -1,12 +1,7 @@
-float VALUE_2Y04 = 0.0;
-float VALUE_4102 = 0.0;
-float VALUE_4103 = 0.0;
-float VALUE_2Y02 = 0.0;
-
-float Kp_IR_abs = 0;
-float Ki_IR_abs = 0;
-float Kp_IR_dif = 0;
-float Ki_IR_dif = 0;
+// float VALUE_2Y04 = 0.0;
+// float VALUE_4102 = 0.0;
+// float VALUE_4103 = 0.0;
+// float VALUE_2Y02 = 0.0;
 
 void moving_alone_wall(float target_distance_Sonar, float target_distance_IR, bool using_gyro, bool use_left_side_IRs, bool use_right_side_IRs)
 {
@@ -109,7 +104,9 @@ void moving_alone_wall(float target_distance_Sonar, float target_distance_IR, bo
 
       temp_SV_dif = (int)(Kp_IR_dif*temp_IR_distance_dif + Ki_IR_dif*cumm_IR_distance_dif);
     }
-    else{}
+    else
+    {
+    }
 
     if(using_gyro){}
 
@@ -118,10 +115,10 @@ void moving_alone_wall(float target_distance_Sonar, float target_distance_IR, bo
     SVLF = saturation(-500 + temp_SV_dif  + temp_SV_abs*abs_move_C);
     SVLR = saturation(-500 + temp_SV_dif  - temp_SV_abs*abs_move_C);
 
-    Serial1.print(VALUE_2Y04);
-    Serial1.print(" ");
-    Serial1.print(VALUE_4102);
-    Serial1.println();
+    // Serial1.print(VALUE_2Y04);
+    // Serial1.print(" ");
+    // Serial1.print(VALUE_4102);
+    // Serial1.println();
     // Serial.print(temp_SV);
     // Serial.print(" ");
     // Serial.println(Crab_move_C);
@@ -156,11 +153,13 @@ void moving_alone_wall(float target_distance_Sonar, float target_distance_IR, bo
     //cw === all (+)
     delay(100);
   }
+    stop();
+  movement_phase++;
 }
 
 float find_average_IR(String name)
 {
-  Serial.print("one roll ");
+  // Serial.print("one roll ");
   float readings = 0.0;
   float temp_reading = 0.0;
 
