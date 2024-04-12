@@ -17,6 +17,8 @@
   Author: Logan Stuart
 */
 #include <Servo.h> //Need for Servo pulse output
+#include <PID_v1.h>
+
 
 // #define NO_READ_GYRO  //Uncomment of GYRO is not attached.
 // #define NO_HC-SR04 //Uncomment of HC-SR04 ultrasonic ranging sensor is not attached.
@@ -133,7 +135,7 @@ float gyroSensitivity = 0.007; // gyro sensitivity unit is (mv/degree/second) ge
 float rotationThreshold = 1.5; // because of gyro drifting, defining rotation angular velocity less than
 // this value will not be ignored
 float gyroRate = 0;     // read out value of sensor in voltage
-float currentAngle = 0; // current angle calculated by angular velocity integral on
+double currentAngle = 0; // current angle calculated by angular velocity integral on
 float GyroTimeNow = 0;
 float GyroTimePrevious = 0;
 

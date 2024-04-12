@@ -37,12 +37,15 @@ void execute_movement_phase()
       //   previous_sensor_read = millis();
       // }
 
-      moving_alone_wall_middle(10,350,0,1);
+      // moving_alone_wall_middle(10,350,0,1);
+      GyroTurn(180);
+      movement_phase++;
       break;
     case 1:
       // driveStrightUntilDistance(10);
       // Serial1.println(movement_phase);
       //execute code
+      Serial.println("Done!");
       break;
     // case 2:
     //   //execute code
