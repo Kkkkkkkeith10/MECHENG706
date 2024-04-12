@@ -32,12 +32,12 @@ void execute_movement_phase()
       // static unsigned long previous_sensor_read;
       // if (millis()-previous_sensor_read > 250)
       // {
-      //   // Serial1.println(IR_sensorReadDistance("2Y_02"));//right long range
-      //   Serial1.println(IR_sensorReadDistance("2Y_04"));//left long range
+      //   Serial1.println(IR_sensorReadDistance("2Y_02"));//right long range
+      //   // Serial1.println(IR_sensorReadDistance("2Y_04"));//left long range
       //   previous_sensor_read = millis();
       // }
 
-      moving_alone_wall_middle(10,400,1,0);
+      moving_alone_wall_middle(10,350,0,1);
       break;
     case 1:
       // driveStrightUntilDistance(10);

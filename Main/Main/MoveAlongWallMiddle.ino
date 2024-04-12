@@ -47,7 +47,7 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
     Kp_IR_abs = 20;
     Ki_IR_abs = 0;
     Kp_IR_dif = 1;
-    Ki_IR_dif = 0;
+    Ki_IR_dif = 0.8;
 
     // float VALUE_2Y04 = find_average_IR("2Y_04");
     // float VALUE_4102 = find_average_IR("41_02");
@@ -56,10 +56,10 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
   }
   else if (use_right_side_IRs)
   { 
-    Kp_IR_abs = 10;
+    Kp_IR_abs = 20;
     Ki_IR_abs = 0;
-    Kp_IR_dif = 10;
-    Ki_IR_dif = 0;
+    Kp_IR_dif = 1;
+    Ki_IR_dif = 0.8;
 
     // float VALUE_4103 = find_average_IR("41_03");
     // float VALUE_2Y02 = find_average_IR("2Y_02");
@@ -123,15 +123,15 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
 
     temp_GV_dif = (int)(Kp_GV_dif*angle_error + Ki_GV_dif*angle_error_cumm);
 
-    // SVRF = saturation(500 + temp_SV_dif  + temp_SV_abs*abs_move_C);
-    // SVRR = saturation(500 + temp_SV_dif  - temp_SV_abs*abs_move_C);
-    // SVLF = saturation(-500 + temp_SV_dif  + temp_SV_abs*abs_move_C);
-    // SVLR = saturation(-500 + temp_SV_dif  - temp_SV_abs*abs_move_C);
+    SVRF = saturation(500 + temp_SV_dif  + temp_SV_abs*abs_move_C);
+    SVRR = saturation(500 + temp_SV_dif  - temp_SV_abs*abs_move_C);
+    SVLF = saturation(-500 + temp_SV_dif  + temp_SV_abs*abs_move_C);
+    SVLR = saturation(-500 + temp_SV_dif  - temp_SV_abs*abs_move_C);
 
-    SVRF = saturation(500   + temp_SV_abs*abs_move_C + temp_GV_dif*abs_move_C+temp_SV_dif);
-    SVRR = saturation(500   - temp_SV_abs*abs_move_C + temp_GV_dif*abs_move_C+temp_SV_dif);
-    SVLF = saturation(-500   + temp_SV_abs*abs_move_C + temp_GV_dif*abs_move_C+temp_SV_dif);
-    SVLR = saturation(-500   - temp_SV_abs*abs_move_C + temp_GV_dif*abs_move_C+temp_SV_dif);
+    // SVRF = saturation(500   + temp_SV_abs*abs_move_C + temp_GV_dif*abs_move_C+temp_SV_dif);
+    // SVRR = saturation(500   - temp_SV_abs*abs_move_C + temp_GV_dif*abs_move_C+temp_SV_dif);
+    // SVLF = saturation(-500   + temp_SV_abs*abs_move_C + temp_GV_dif*abs_move_C+temp_SV_dif);
+    // SVLR = saturation(-500   - temp_SV_abs*abs_move_C + temp_GV_dif*abs_move_C+temp_SV_dif);
 
     // Serial1.print(VALUE_2Y04);
     // Serial1.print(" ");
