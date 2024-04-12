@@ -46,7 +46,7 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
   {
     Kp_IR_abs = 20;
     Ki_IR_abs = 0;
-    Kp_IR_dif = 20;
+    Kp_IR_dif = 1;
     Ki_IR_dif = 0;
 
     // float VALUE_2Y04 = find_average_IR("2Y_04");
@@ -128,10 +128,10 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
     // SVLF = saturation(-500 + temp_SV_dif  + temp_SV_abs*abs_move_C);
     // SVLR = saturation(-500 + temp_SV_dif  - temp_SV_abs*abs_move_C);
 
-    SVRF = saturation(500   + temp_SV_abs*abs_move_C + temp_GV_dif*abs_move_C);
-    SVRR = saturation(500   - temp_SV_abs*abs_move_C + temp_GV_dif*abs_move_C);
-    SVLF = saturation(-500   + temp_SV_abs*abs_move_C + temp_GV_dif*abs_move_C);
-    SVLR = saturation(-500   - temp_SV_abs*abs_move_C + temp_GV_dif*abs_move_C);
+    SVRF = saturation(500   + temp_SV_abs*abs_move_C + temp_GV_dif*abs_move_C+temp_SV_dif);
+    SVRR = saturation(500   - temp_SV_abs*abs_move_C + temp_GV_dif*abs_move_C+temp_SV_dif);
+    SVLF = saturation(-500   + temp_SV_abs*abs_move_C + temp_GV_dif*abs_move_C+temp_SV_dif);
+    SVLR = saturation(-500   - temp_SV_abs*abs_move_C + temp_GV_dif*abs_move_C+temp_SV_dif);
 
     // Serial1.print(VALUE_2Y04);
     // Serial1.print(" ");
