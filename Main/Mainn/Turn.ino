@@ -45,7 +45,7 @@ void trunDegree(float TargetAngle_Degree )
   while ((currentAngle < TargetAngle_Degree - torlance) || (currentAngle > TargetAngle_Degree + torlance))
   {
     //Serial1.println(currentAngle);
-    readGyroTurn();
+    readGyro1();
     //Serial1.println(currentAngle);
     if(currentAngle < TargetAngle_Degree - torlance){
       ccw();
@@ -54,7 +54,4 @@ void trunDegree(float TargetAngle_Degree )
     }
   }
   stop();
-
-  
-  movement_phase++;
 }

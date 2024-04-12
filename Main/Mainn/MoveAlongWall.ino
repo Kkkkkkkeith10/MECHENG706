@@ -154,7 +154,7 @@ void moving_alone_wall(float target_distance_Sonar, float target_distance_IR, bo
     delay(100);
   }
     stop();
-  movement_phase++;
+    return;
 }
 
 float find_average_IR(String name)

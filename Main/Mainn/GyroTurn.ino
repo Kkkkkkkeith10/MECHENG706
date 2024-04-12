@@ -4,7 +4,7 @@ double Setpoint, Input, Output;
 //output is a value between 0 and 255
 //need to map to 0 being -500 and 255 being 500ca
 //Specify the links and initial tuning parameters
-double Kp_Turn=2, Ki_Turn=0.73, Kd_Turn=0;
+double Kp_Turn=2, Ki_Turn=0.75, Kd_Turn=0;
 //TO GO CW use DIRECT and CW
 //To GO CCW use REVERSE and CCW
 PID myPID(&currentAngle, &Output, &Setpoint, Kp_Turn, Ki_Turn, Kd_Turn, DIRECT);
@@ -39,7 +39,9 @@ void GyroTurn(double target)
       previous_millis = millis();
     }
   }
+  Serial1.println("Stopping");
   stop();
+  return;
 }
 
 

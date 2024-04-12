@@ -132,7 +132,6 @@ void driveStrightUntilDistance(int cm)
     MoveStraightPID(100);
     delay(20);
   }
-  movement_phase++;
   stop();
 }
 

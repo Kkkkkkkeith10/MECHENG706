@@ -32,6 +32,7 @@ void readGyro()
 
 void resetGyro()
 {
+  currentAngle = 0;
   long sum = 0;
   for (int i = 0; i < 100; i++) // read 100 values of voltage when gyro is at still, to calculate the zero-drift
   {

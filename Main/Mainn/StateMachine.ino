@@ -24,7 +24,9 @@ void execute_movement_phase()
       // Serial1.println(movement_phase);
       // sonar_reading = HC_SR04_range(); //sonar read
       // Serial1.println(sonar_reading);
-      // moving_alone_wall(20,150,0,1,0);
+      moving_alone_wall(10,90,0,1,0);
+      movement_phase++;
+
       // while(1)
       // {
       // MoveStraightPID(100);
@@ -36,82 +38,70 @@ void execute_movement_phase()
       //   // Serial1.println(IR_sensorReadDistance("2Y_04"));//left long range
       //   previous_sensor_read = millis();
       // }
-
+      
       // moving_alone_wall_middle(10,350,0,1);
-      GyroTurn(180);
-      movement_phase++;
       break;
     case 1:
       // driveStrightUntilDistance(10);
       // Serial1.println(movement_phase);
       //execute code
-      Serial.println("Done!");
+      strafe_left();
+      delay(200);
+      stop();
+      movement_phase++;
       break;
-    // case 2:
-    //   //execute code
-    //   //go straight along the 
-    //   trunDegree(-90);
-    //   Serial1.println(movement_phase);
-    //   break;
-    // case 3:
-    //   homing_normal_system(0,0,0,1,6);
-    //   Serial1.println(movement_phase);
-    //   break;
-    // case 4:
-    //   moving_alone_wall_until_cm(20,100,0, 1,0);
-    //   Serial1.println(movement_phase);
-    //   break;
-    // case 5:
-    //   trunDegree(-90);
-    //   Serial1.println(movement_phase);
-    //   break;
-    // case 6:
-    //   checkForLongSide();
-    //   Serial1.println(movement_phase);
-    //   break;
-    // case 7:
-    //   driveStrightUntilDistance(10);
-    //   Serial1.println(movement_phase);
-    //   break;
-    // case 8:
-    //   trunDegree(-90);
-    //   Serial1.println(movement_phase);
-    //   break;
-    // case 9:
-    //   driveStrightUntilDistance(10);
-    //   Serial1.println(movement_phase);
-    //   break;
-    // case 10:
-    //   trunDegree(-90);
-    //   Serial1.println(movement_phase);
-    //   break;
-    // case 11:
-    //   driveStringhtForDistance(10);
-    //   Serial1.println(movement_phase);
-    //   break;
-    // case 12:
-    //   trunDegree(-90);
-    //   Serial1.println(movement_phase);
-    //   break;
-    // case 13:
-    //   driveStrightUntilDistance(10);
-    //   Serial1.println(movement_phase);
-    //   break;
-    // case 14:
-    //   trunDegree(90);
-    //   Serial1.println(movement_phase);
-    //   break;
-    // case 15:
-    //   driveStringhtForDistance(10);
-    //   Serial1.println(movement_phase);
-    //   break;
-    // case 16:
-    //   trunDegree(90);
-    //   Serial1.println(movement_phase);
-    //   break;
-    // case 17:
-    //   movement_phase = 9;
-      // break;
+    case 2:
+      //execute code
+      //go straight along the 
+      GyroTurn(180);
+      movement_phase++;
+      break;
+    case 3:
+      forward();
+      delay(200);
+      stop();
+      resetGyro();
+      // reverse();
+      // delay(200);
+      // cw();
+      // delay(10);
+      movement_phase++;
+      break;
+    case 4:
+      delay(100);
+      moving_alone_wall_middle(10,255,0,1);
+      movement_phase++;
+      break;
+    case 5:
+      // driveStrightUntilDistance(10);
+      // Serial1.println(movement_phase);
+      //execute code
+      strafe_right();
+      delay(200);
+      stop();
+      movement_phase++;
+      break;
+    case 6:
+      //execute code
+      //go straight along the 
+      GyroTurn(180);
+      movement_phase++;
+      break;
+    case 7:
+      forward();
+      delay(400);
+      stop();
+      resetGyro();
+      // reverse();
+      // delay(200);
+      // cw();
+      // delay(10);
+      movement_phase++;
+      break;
+    case 8:
+      moving_alone_wall_middle(10,455,1,1);
+      movement_phase++;
+      break;
     
 
 
