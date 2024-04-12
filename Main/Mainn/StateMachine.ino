@@ -99,7 +99,7 @@ void execute_movement_phase()
       movement_phase++;
       break;
     case 8:
-      moving_alone_wall_middle(10,255,1,0);
+      moving_alone_wall_middle(10,455,1,0);
       movement_phase++;
       break;
     
