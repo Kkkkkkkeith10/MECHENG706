@@ -33,18 +33,18 @@ void execute_movement_phase()
       break;
     case 2:
       // resetGyro();
-      GyroTurn(-90);
+      GyroTurn(90);
       delay(100);
       movement_phase++;
       break;
     case 3:
-      moving_alone_wall(10,90,0,1,0);
+      moving_alone_wall(10,90,0,0,1);
       delay(100);
       movement_phase++;
       break;
     case 4:
     resetGyro();
-      GyroTurn(-90);
+      GyroTurn(90);
       delay(100);
       movement_phase++;
       break;
@@ -53,13 +53,13 @@ void execute_movement_phase()
       //no movement_phase++;
       break;
     case 6:
-      moving_alone_wall(10,90,0,1,0);
+      moving_alone_wall(10,90,0,0,1);
       delay(100);
       movement_phase++;
       break;
     case 7:
     resetGyro();
-      GyroTurn(-90);
+      GyroTurn(90);
       delay(100);
       movement_phase++;
       break;
