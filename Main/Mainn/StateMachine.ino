@@ -19,9 +19,10 @@ void execute_movement_phase()
     // Serial1.println(movement_phase);
 
     case 0:
-      scan_until_normal();
-      delay(100);
-      movement_phase++;
+      // scan_until_normal();
+      // delay(100);
+      // movement_phase++;
+      GyroTurn(90);
       break;
     case 1:
       // Serial1.println(movement_phase);
