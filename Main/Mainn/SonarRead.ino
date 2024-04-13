@@ -38,7 +38,7 @@ float HC_SR04_range()
     if (pulse_width > (MAX_DIST + 1000))
     {
       // Serial1.println("HC-SR04: Out of range");
-      return;
+      return -1;
     }
   }
 

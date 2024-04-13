@@ -3,7 +3,7 @@
 // float VALUE_4103 = 0.0;
 // float VALUE_2Y02 = 0.0;
 
-void moving_alone_wall_middle(float target_distance_Sonar, float target_distance_IR, bool use_left_side_IRs, bool use_right_side_IRs)
+void moving_alone_wall_middle(float target_distance_Sonar, float target_distance_IR, bool use_left_side_IRs, bool use_right_side_IRs, int go_reverse)
 {
   //This function mainly using two IR sensors to making the robot moving parallal with the wall.
   //use left or right side IRs to make the system parallel to the wall, only one side can be used at a sigle call
@@ -11,6 +11,7 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
   //Gyro is also used as help, set [using_gyro] as TRUE to enable gyro 
   //The input is the target distance between the robot and the wall
   //%%%%This function using global sensor readings%%%%
+  //Pass -1 for reverse and 1 for forward
 
   resetGyro();
 
@@ -102,9 +103,17 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
       float target_distance_IR_left = averages_sum_left /10;
   }
 
-
-  while(HC_SR04_range() > target_distance_Sonar)
+  static unsigned long previous_sonar_read = 0;
+  while(((sonar_reading > target_distance_Sonar) & (go_reverse == 1)) |((sonar_reading < target_distance_Sonar) & (go_reverse == -1)))
   {
+
+    if (millis()- previous_sonar_read > 800)
+    {
+      sonar_reading = HC_SR04_range(); //sonar read
+      Serial1.println(sonar_reading);
+      previous_sonar_read = millis();
+    }
+
     time_prev = time_curr;
     time_curr = (float)millis()/1000;
     time_delta = time_curr - time_prev;
@@ -176,9 +185,9 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
     readGyro1();
     angle_error = 0 - currentAngle;
     angle_error_cumm += angle_error; //add the error to cummulative error
-    Serial1.print(currentAngle);
-    Serial1.print(" ");
-    Serial1.println(temp_GV_dif);
+    // Serial1.print(currentAngle);
+    // Serial1.print(" ");
+    // Serial1.println(temp_GV_dif);
 
     temp_GV_dif = (int)(Kp_GV_dif*angle_error + Ki_GV_dif*angle_error_cumm);
 
@@ -187,10 +196,10 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
     // SVLF = saturation(-500 + temp_SV_dif  + temp_SV_abs*abs_move_C);
     // SVLR = saturation(-500 + temp_SV_dif  - temp_SV_abs*abs_move_C);
 
-    SVRF = saturation(500   + temp_SV_abs*abs_move_C - temp_GV_dif + temp_SV_dif);
-    SVRR = saturation(500   - temp_SV_abs*abs_move_C - temp_GV_dif + temp_SV_dif);
-    SVLF = saturation(-500   + temp_SV_abs*abs_move_C - temp_GV_dif + temp_SV_dif);
-    SVLR = saturation(-500   - temp_SV_abs*abs_move_C - temp_GV_dif + temp_SV_dif);
+    SVRF = saturation(500*go_reverse   + temp_SV_abs*abs_move_C - temp_GV_dif + temp_SV_dif);
+    SVRR = saturation(500*go_reverse   - temp_SV_abs*abs_move_C - temp_GV_dif + temp_SV_dif);
+    SVLF = saturation(-500*go_reverse   + temp_SV_abs*abs_move_C - temp_GV_dif + temp_SV_dif);
+    SVLR = saturation(-500*go_reverse   - temp_SV_abs*abs_move_C - temp_GV_dif + temp_SV_dif);
 
     // SVRF = saturation(500   + temp_SV_abs*abs_move_C + temp_GV_dif*abs_move_C);
     // SVRR = saturation(500   - temp_SV_abs*abs_move_C + temp_GV_dif*abs_move_C);
