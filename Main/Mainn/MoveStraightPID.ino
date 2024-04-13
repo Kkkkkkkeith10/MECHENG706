@@ -133,8 +133,10 @@ void driveStrightUntilDistance(int cm)
   {
      // Serial1.print(currentAngle);
     //Serial1.println(HC_SR04_range());
+    // forward();
     MoveStraightPID(100);
     delay(20);
+    ReadAllSensor();
   }
   stop();
 }

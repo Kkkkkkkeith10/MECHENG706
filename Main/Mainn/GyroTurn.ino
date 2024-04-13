@@ -18,9 +18,12 @@ void GyroTurn(double target)
   static double tolerance = 1;
 
   resetGyro();
-
-  Setpoint = target;
+  myPID.SetMode(MANUAL);
+  Output = 0;
   myPID.SetMode(AUTOMATIC);
+
+    Setpoint = target;
+
   while(currentAngle < (Setpoint - tolerance) || currentAngle > (Setpoint + tolerance))
   {
     if (millis()-previous_millis > 50)

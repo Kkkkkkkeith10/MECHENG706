@@ -19,34 +19,55 @@ void execute_movement_phase()
     // Serial1.println(movement_phase);
 
     case 0:
-      moving_alone_wall(10,90,0,0,1);
-      stop();
+      scan_until_normal();
       delay(100);
       movement_phase++;
       break;
     case 1:
       // Serial1.println(movement_phase);
-      GyroTurn(180);
-      forward();
-      delay(150);
+      driveStrightUntilDistance(10);
       stop();
+      delay(100);
       movement_phase++;
       break;
     case 2:
-      //find normal
-      // find_normal();
-      // scan_until_normal();
-      // Serial1.println(movement_phase);
-      // while(1)
-      // {
-      // static unsigned long previous_sonar_read;
-      // if (millis()- previous_sonar_read > 500)
-      // {
-      //   sonar_reading = HC_SR04_range(); //sonar read
-      //   Serial1.println(sonar_reading);
-      //   previous_sonar_read = millis();
-      // }
-      // }
+      resetGyro();
+      GyroTurn(90);
+      delay(100);
+      movement_phase++;
+      break;
+    case 3:
+      moving_alone_wall(10,90,0,1,0);
+      delay(100);
+      movement_phase++;
+      break;
+    case 4:
+    resetGyro();
+      GyroTurn(90);
+      delay(100);
+      movement_phase++;
+      break;
+    case 5:
+      checkForLongSide();
+      //no movement_phase++;
+      break;
+    case 6:
+      moving_alone_wall(10,90,0,1,0);
+      delay(100);
+      movement_phase++;
+      break;
+    case 7:
+    resetGyro();
+      GyroTurn(90);
+      delay(100);
+      movement_phase++;
+      break;
+
+
+
+
+    case 8:
+
       moving_alone_wall(10,90,0,1,0);
       movement_phase++;
 
@@ -64,7 +85,7 @@ void execute_movement_phase()
       
       // moving_alone_wall_middle(10,350,0,1);
       break;
-    case 3:
+    case 9:
       // driveStrightUntilDistance(10);
       // Serial1.println(movement_phase);
       //execute code
@@ -73,7 +94,7 @@ void execute_movement_phase()
       stop();
       movement_phase++;
       break;
-    case 4:
+    case 10:
       //execute code
       //go straight along the 
       delay(500); //allow robot to settle
@@ -82,13 +103,13 @@ void execute_movement_phase()
       moving_alone_wall_middle(160,255,1,0, -1);
       movement_phase++;
       break;
-    case 5:
+    case 11:
       strafe_left();
       delay(300);
       stop();
       movement_phase++;
       break;
-    case 6:
+    case 12:
       // delay(100);
       delay(500); //allow robot to settle
       resetGyro();
@@ -97,20 +118,20 @@ void execute_movement_phase()
       moving_alone_wall_middle(10,450,1,0,1);
       movement_phase++;
       break;
-    case 7:
+    case 13:
       strafe_left();
       delay(500);
       stop();
       movement_phase++;
       break;
-    case 8:
+    case 14:
       // Serial1.println(movement_phase);
       GyroTurn(180);
       forward();
       delay(150);
       stop();
       movement_phase++;
-    case 9:
+    case 15:
       // Serial1.println(movement_phase);
       delay(500); //allow robot to settle
       sonar_reading = HC_SR04_range(); //sonar read
@@ -118,20 +139,20 @@ void execute_movement_phase()
       moving_alone_wall_middle(10,450,1,0,1);
       movement_phase++;
       break;
-    case 10:
+    case 16:
       strafe_right();
       delay(300);
       stop();
       movement_phase++;
       break;
-    case 11:
+    case 17:
       delay(500); //allow robot to settle
       sonar_reading = HC_SR04_range(); //sonar read
       resetGyro();
       moving_alone_wall_middle(160,255,1,0,-1);
       movement_phase++;
       break;
-    case 12:
+    case 18:
       // Serial1.println(movement_phase);
       moving_alone_wall(10,90,0,1,0);
       movement_phase++;

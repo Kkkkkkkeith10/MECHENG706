@@ -106,7 +106,7 @@ Servo turret_motor;
 //Speed and motor movement
 int speed_val = 500;
 int speed_change;
-int speed_val_low = 200;
+int speed_val_low = 100;
 
 //PID
 int KP = 100;
@@ -140,7 +140,7 @@ double currentAngle = 0; // current angle calculated by angular velocity integra
 float GyroTimeNow = 0;
 float GyroTimePrevious = 0;
 
-int movement_phase = 2; //use for flow control of the robots programmed movement
+int movement_phase = 0; //use for flow control of the robots programmed movement
 int currentState = 0;
 
 //IR Readings

@@ -97,6 +97,8 @@ void scan_until_normal()
     stop();
     previous_ave_distance = current_ave_distance;
     current_ave_distance = find_average_distance();
+
+    ReadAllSensor();
   }
   stop();
 
@@ -112,9 +114,10 @@ void scan_until_normal()
     stop();
     previous_ave_distance = current_ave_distance;
     current_ave_distance = find_average_distance();
+
+    ReadAllSensor();
   }
   stop();
-  movement_phase++;
 }
 
 float find_average_distance()
