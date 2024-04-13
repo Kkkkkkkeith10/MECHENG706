@@ -69,7 +69,7 @@ void execute_movement_phase()
       // Serial1.println(movement_phase);
       //execute code
       strafe_left();
-      delay(300);
+      delay(500);
       stop();
       movement_phase++;
       break;

@@ -122,7 +122,7 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
     if(use_left_side_IRs)
     {
       //disregard large changes in measurements
-      if ((target_distance_IR - IR_sensorReadDistance("2Y04") >100) | (target_distance_IR - IR_sensorReadDistance("2Y04") < -100))
+      if ((target_distance_IR - IR_sensorReadDistance("2Y04") >80) | (target_distance_IR - IR_sensorReadDistance("2Y04") < -80))
       {
         //do nothing
       }
@@ -151,7 +151,7 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
     }
     else if(use_right_side_IRs)
     {
-      if ((target_distance_IR - IR_sensorReadDistance("2Y02") >100) | (target_distance_IR - IR_sensorReadDistance("2Y02") < -100))
+      if ((target_distance_IR - IR_sensorReadDistance("2Y02") >80) | (target_distance_IR - IR_sensorReadDistance("2Y02") < -80))
       {
         //do nothing
       }
