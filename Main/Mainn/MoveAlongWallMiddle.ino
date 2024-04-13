@@ -110,11 +110,11 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
     if (millis()- previous_sonar_read > 800)
     {
       sonar_reading = HC_SR04_range(); //sonar read
-      Serial1.print(sonar_reading);
-      Serial1.print(" ");
+      
       previous_sonar_read = millis();
     }
-
+    // Serial1.print(sonar_reading);
+    // Serial1.print(" ");
     time_prev = time_curr;
     time_curr = (float)millis()/1000;
     time_delta = time_curr - time_prev;
@@ -122,17 +122,17 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
     if(use_left_side_IRs)
     {
       //disregard large changes in measurements
-      if ((target_distance_IR - find_average_IR("2Y04") >100) | (target_distance_IR - find_average_IR("2Y04") < -100))
+      if ((target_distance_IR - IR_sensorReadDistance("2Y04") >100) | (target_distance_IR - IR_sensorReadDistance("2Y04") < -100))
       {
         //do nothing
       }
       else
       {
         PREVIOUS_2Y04_VALUE = VALUE_2Y04;
-        VALUE_2Y04 = find_average_IR("2Y_04");
-        Serial1.print(VALUE_2Y04);
-        Serial1.print(" ");
-        Serial1.println(PREVIOUS_2Y04_VALUE);
+        VALUE_2Y04 = IR_sensorReadDistance("2Y_04");
+        // Serial1.print(VALUE_2Y04);
+        // Serial1.print(" ");
+        // Serial1.println(PREVIOUS_2Y04_VALUE);
       }
 
       //temp_IR_distance_abs_prev = temp_IR_distance_abs;
@@ -151,7 +151,7 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
     }
     else if(use_right_side_IRs)
     {
-      if ((target_distance_IR - find_average_IR("2Y02") >100) | (target_distance_IR - find_average_IR("2Y02") < -100))
+      if ((target_distance_IR - IR_sensorReadDistance("2Y02") >100) | (target_distance_IR - IR_sensorReadDistance("2Y02") < -100))
       {
         //do nothing
       }
@@ -159,10 +159,10 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
       {
         //update
         PREVIOUS_2Y02_VALUE = VALUE_2Y02;
-        VALUE_2Y02 = find_average_IR("2Y_02");
-        Serial1.print(VALUE_2Y02);
-        Serial1.print(" ");
-        Serial1.println(PREVIOUS_2Y02_VALUE); 
+        VALUE_2Y02 = IR_sensorReadDistance("2Y_02");
+        // Serial1.print(VALUE_2Y02);
+        // Serial1.print(" ");
+        // Serial1.println(PREVIOUS_2Y02_VALUE); 
       }
 
 
@@ -265,6 +265,7 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
     left_rear_motor.writeMicroseconds(1500 + SVLR);
     right_rear_motor.writeMicroseconds(1500 + SVRR);
     right_font_motor.writeMicroseconds(1500 + SVRF);
+        ReadAllSensor();
 
     //ccw == all (-)
     //cw === all (+)

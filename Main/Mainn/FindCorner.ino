@@ -39,7 +39,7 @@ void find_normal()
     }
 
     
-  Serial1.println("searching");
+  // Serial1.println("searching");
   //while not found normal
   while (found_normal == false)
   {
@@ -69,7 +69,7 @@ void find_normal()
       }
       millis_prev = millis();
     
-    Serial1.println(sonar_average-sonar_average_prev1);
+    // Serial1.println(sonar_average-sonar_average_prev1);
     if (prev_direction != direction)
     {
       stop();

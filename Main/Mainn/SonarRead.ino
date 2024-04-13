@@ -69,4 +69,35 @@ float HC_SR04_range()
 #endif
 
 
+void ReadAllSensor(){
+  Serial1.print(movement_phase);
+  Serial1.print(" ");
+
+  Serial1.print(VALUE_2Y04);
+  Serial1.print(" ");
+
+  Serial1.print(VALUE_4102);
+  Serial1.print(" ");
+
+  Serial1.print(VALUE_2Y02);
+  Serial1.print(" ");
+
+  Serial1.print(VALUE_4103);
+  Serial1.print(" ");
+
+  Serial1.print(sonar_reading);
+  Serial1.print(" ");
+
+  Serial1.print(currentAngle);
+  Serial1.print(" ");
+
+  Serial1.println(" ");
+
+  
+
+  
+
+
+}
+
 

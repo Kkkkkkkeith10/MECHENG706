@@ -37,6 +37,8 @@ void GyroTurn(double target)
 
       // Serial1.println(currentAngle);
       previous_millis = millis();
+          ReadAllSensor();
+
     }
   }
   // Serial1.println("Stopping");

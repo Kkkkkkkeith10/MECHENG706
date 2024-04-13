@@ -68,9 +68,9 @@ void execute_movement_phase()
       // driveStrightUntilDistance(10);
       // Serial1.println(movement_phase);
       //execute code
-      // strafe_left();
-      // delay(300);
-      // stop();
+      strafe_left();
+      delay(300);
+      stop();
       movement_phase++;
       break;
     case 4:

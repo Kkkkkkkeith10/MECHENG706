@@ -85,6 +85,7 @@ void Car_Move_withIRSensor(String left_front_IR, String left_back_IR, String rig
 double IR_sensorReadDistance(String sensor);
 void interpret_command(char command);
 float HC_SR04_range();
+void ReadAllSensor();
 void  execute_movement_phase();
 STATE running();
 
@@ -139,7 +140,7 @@ double currentAngle = 0; // current angle calculated by angular velocity integra
 float GyroTimeNow = 0;
 float GyroTimePrevious = 0;
 
-int movement_phase = 0; //use for flow control of the robots programmed movement
+int movement_phase = 2; //use for flow control of the robots programmed movement
 int currentState = 0;
 
 //IR Readings

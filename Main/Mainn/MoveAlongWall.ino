@@ -66,9 +66,9 @@ void moving_alone_wall(float target_distance_Sonar, float target_distance_IR, bo
     time_prev = time_curr;
     time_curr = (float)millis()/1000;
     time_delta = time_curr - time_prev;
-    
+
     sonar_reading = HC_SR04_range();
-    Serial1.println(sonar_reading);
+    
 
     if(use_left_side_IRs)
     {
@@ -151,7 +151,7 @@ void moving_alone_wall(float target_distance_Sonar, float target_distance_IR, bo
     left_rear_motor.writeMicroseconds(1500 + SVLR);
     right_rear_motor.writeMicroseconds(1500 + SVRR);
     right_font_motor.writeMicroseconds(1500 + SVRF);
-
+    ReadAllSensor();
     //ccw == all (-)
     //cw === all (+)
     delay(100);

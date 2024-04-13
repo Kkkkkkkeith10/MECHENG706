@@ -10,23 +10,23 @@ void turnAngleWithGyro(float angle, float millisecond)
   while (millis() < timeAtDestination)
   {
     readGyroTurn();
-    Serial1.print(currentAngle);
-    Serial1.print(" ");
+    // Serial1.print(currentAngle);
+    // Serial1.print(" ");
 
     if ((currentAngle < (torlance + target)) && (currentAngle > (-torlance + target)))
     {
       forward();
-      Serial1.println("forward");
+      // Serial1.println("forward");
     }
     else if ((currentAngle > (torlance + target)) && (currentAngle < (180 + target)))
     {
       ccw();
-      Serial1.println("ccw");
+      // Serial1.println("ccw");
     }
     else
     {
       cw();
-      Serial1.println("cw");
+      // Serial1.println("cw");
     }
 
     delay(40);
