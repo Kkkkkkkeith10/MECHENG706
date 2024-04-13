@@ -45,7 +45,7 @@ void resetGyro()
     delay(5);
   }
   gyroZeroVoltage = int(sum / 100); // average the sum as the zero drifting
-  Serial1.println(gyroZeroVoltage);
+  // Serial1.println(gyroZeroVoltage);
 }
 
 void readGyro1()

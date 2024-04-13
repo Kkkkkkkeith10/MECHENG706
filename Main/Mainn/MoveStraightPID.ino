@@ -46,7 +46,7 @@ void MoveStraightPID(float Power)
 }
 
 
-void MoveStraightAlongAngle(float TargetAngle_Degree, float Power)
+void MoveStraightAlongAngle(float TargetAngle_Degree, float Power, int hold)
 {
   SVRF = (int)300 * (Power / 100);
   SVRR = SVRF;
@@ -96,7 +96,7 @@ void MoveStraightAlongAngle(float TargetAngle_Degree, float Power)
   // Serial.print(" ");
   // Serial.println(SVLR);
 
-  delay(20);
+  delay(hold);
 }
 
 

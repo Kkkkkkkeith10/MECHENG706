@@ -57,13 +57,15 @@ void homing_normal_system(bool use_Gyro, bool use_sonar, bool use_left_side_IRs,
 
 
 
-float VALUE_2Y04 = 0.0;
 float VALUE_4102 = 0.0;
 float VALUE_4103 = 0.0;
+
+float VALUE_2Y04 = 0.0;
 float VALUE_2Y02 = 0.0;
 
 float PREVIOUS_2Y04_VALUE = 0;
 float PREVIOUS_2Y02_VALUE = 0;
+
 
 // float Kp_IR_dif = 10;
 // float Kp_IR_abs = 15;

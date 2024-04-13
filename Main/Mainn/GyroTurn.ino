@@ -35,11 +35,11 @@ void GyroTurn(double target)
       right_font_motor.writeMicroseconds(1500 + speed_value);
 
 
-      Serial1.println(currentAngle);
+      // Serial1.println(currentAngle);
       previous_millis = millis();
     }
   }
-  Serial1.println("Stopping");
+  // Serial1.println("Stopping");
   stop();
   return;
 }

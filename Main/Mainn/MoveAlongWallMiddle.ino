@@ -110,7 +110,8 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
     if (millis()- previous_sonar_read > 800)
     {
       sonar_reading = HC_SR04_range(); //sonar read
-      Serial1.println(sonar_reading);
+      Serial1.print(sonar_reading);
+      Serial1.print(" ");
       previous_sonar_read = millis();
     }
 
@@ -120,8 +121,20 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
 
     if(use_left_side_IRs)
     {
-      PREVIOUS_2Y04_VALUE = VALUE_2Y04;
-      VALUE_2Y04 = find_average_IR("2Y_04");
+      //disregard large changes in measurements
+      if ((target_distance_IR - find_average_IR("2Y04") >100) | (target_distance_IR - find_average_IR("2Y04") < -100))
+      {
+        //do nothing
+      }
+      else
+      {
+        PREVIOUS_2Y04_VALUE = VALUE_2Y04;
+        VALUE_2Y04 = find_average_IR("2Y_04");
+        Serial1.print(VALUE_2Y04);
+        Serial1.print(" ");
+        Serial1.println(PREVIOUS_2Y04_VALUE);
+      }
+
       //temp_IR_distance_abs_prev = temp_IR_distance_abs;
       temp_IR_distance_abs = (VALUE_2Y04 + PREVIOUS_2Y04_VALUE)/2;
       temp_IR_distance_error_abs = target_distance_IR - temp_IR_distance_abs;
@@ -138,8 +151,21 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
     }
     else if(use_right_side_IRs)
     {
-      PREVIOUS_2Y02_VALUE = VALUE_2Y02;
-      VALUE_2Y02 = find_average_IR("2Y_02");
+      if ((target_distance_IR - find_average_IR("2Y02") >100) | (target_distance_IR - find_average_IR("2Y02") < -100))
+      {
+        //do nothing
+      }
+      else
+      {
+        //update
+        PREVIOUS_2Y02_VALUE = VALUE_2Y02;
+        VALUE_2Y02 = find_average_IR("2Y_02");
+        Serial1.print(VALUE_2Y02);
+        Serial1.print(" ");
+        Serial1.println(PREVIOUS_2Y02_VALUE); 
+      }
+
+
       //temp_IR_distance_abs_prev = temp_IR_distance_abs;
       temp_IR_distance_abs = (PREVIOUS_2Y02_VALUE + VALUE_2Y02)/2;
       temp_IR_distance_error_abs = target_distance_IR - temp_IR_distance_abs;
@@ -201,10 +227,10 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
     SVLF = saturation(-500*go_reverse   + temp_SV_abs*abs_move_C - temp_GV_dif + temp_SV_dif);
     SVLR = saturation(-500*go_reverse   - temp_SV_abs*abs_move_C - temp_GV_dif + temp_SV_dif);
 
-    // SVRF = saturation(500   + temp_SV_abs*abs_move_C + temp_GV_dif*abs_move_C);
-    // SVRR = saturation(500   - temp_SV_abs*abs_move_C + temp_GV_dif*abs_move_C);
-    // SVLF = saturation(-500   + temp_SV_abs*abs_move_C + temp_GV_dif*abs_move_C);
-    // SVLR = saturation(-500   - temp_SV_abs*abs_move_C + temp_GV_dif*abs_move_C);
+    // SVRF = saturation(500*go_reverse   + temp_SV_abs*abs_move_C - temp_GV_dif);
+    // SVRR = saturation(500*go_reverse   - temp_SV_abs*abs_move_C - temp_GV_dif);
+    // SVLF = saturation(-500*go_reverse   + temp_SV_abs*abs_move_C - temp_GV_dif);
+    // SVLR = saturation(-500*go_reverse   - temp_SV_abs*abs_move_C - temp_GV_dif);
 
     // Serial1.print(VALUE_2Y04);
     // Serial1.print(" ");
@@ -243,6 +269,6 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
     //ccw == all (-)
     //cw === all (+)
     delay(100);
-  }
     stop();
+  }
 }
