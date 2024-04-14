@@ -7,7 +7,6 @@ double Setpoint, Input, Output;
 double Kp_Turn=8, Ki_Turn=0, Kd_Turn=0;
 //TO GO CW use DIRECT and CW
 //To GO CCW use REVERSE and CCW
-PID myPID(&currentAngle, &Output, &Setpoint, Kp_Turn, Ki_Turn, Kd_Turn, DIRECT);
 
 void GyroTurn(double target)
 {

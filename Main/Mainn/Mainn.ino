@@ -55,42 +55,6 @@ const int ECHO_PIN = 49;
 //  #define IR_2Y_03 14
 #define IR_2Y_04 A9
 
-//Prototype functions
-void resetGyro();
-void homing_normal_system(bool use_Gyro, bool use_sonar, bool use_left_side_IRs, bool use_right_side_IRs, float tolarence);
-void findCorner();
-void move_along_wall(bool use_Gyro, bool use_sonar, bool use_left_side_IRs, bool use_right_side_IRs, float tolarence);
-void checkForLongSide();
-void ccw_low();
-void cw_low();
-void MoveStraightPID(float Power);
-void turnAngleWithGyro(float angle, float millisecond);
-void driveStrightUntilDistance(int cm);
-void driveStringhtForDistance(int cm);
-void MoveStraightAlongAngle(float TargetAngle_Degree, float Power);
-int saturation(int value);
-void readGyro();
-void readGyro1();
-void disable_motors();
-void enable_motors();
-void stop();
-void forward();
-void reverse();
-void ccw();
-void cw();
-void strafe_left();
-void strafe_right();
-void trunDegree(float TargetAngle_Degree );
-void Car_Move_withIRSensor(String left_front_IR, String left_back_IR, String right_front_IR, String right_back_IR);
-double IR_sensorReadDistance(String sensor);
-void interpret_command(char command);
-float HC_SR04_range();
-void ReadAllSensor();
-void  execute_movement_phase();
-STATE running();
-
-
-
 //------------------------------------------------------------------------ Variables ------------------------------------------------------------------------//
 
 

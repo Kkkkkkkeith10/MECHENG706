@@ -38,7 +38,20 @@ void execute_movement_phase()
       movement_phase++;
       break;
     case 3:
-      moving_alone_wall(10,90,0,0,1);
+    //drive along wall until
+      sonar_reading = HC_SR04_range();
+      //right side PID values
+      Kp_IR_abs = 10;
+      Ki_IR_abs = 0;
+      Kp_IR_dif = 10;
+      Ki_IR_dif = 0;
+      while(HC_SR04_range() > 10) //execute until it is 10cm away from wall
+      {
+        sonar_reading = HC_SR04_range();
+        moving_alone_wall(90,0,1, Kp_IR_abs, Ki_IR_abs, Kp_IR_dif,Ki_IR_dif);
+        ReadAllSensor();
+      }
+      stop();
       delay(100);
       movement_phase++;
       break;
@@ -53,7 +66,19 @@ void execute_movement_phase()
       //no movement_phase++;
       break;
     case 6:
-      moving_alone_wall(10,90,0,0,1);
+      sonar_reading = HC_SR04_range();
+      //right side PID values
+      Kp_IR_abs = 10;
+      Ki_IR_abs = 0;
+      Kp_IR_dif = 10;
+      Ki_IR_dif = 0;
+      while(HC_SR04_range() > 10) //execute until it is 10cm away from wall
+      {
+        sonar_reading = HC_SR04_range();
+        moving_alone_wall(90,0,1, Kp_IR_abs, Ki_IR_abs, Kp_IR_dif,Ki_IR_dif);
+        ReadAllSensor();
+      }
+      stop();
       delay(100);
       movement_phase++;
       break;
@@ -65,11 +90,23 @@ void execute_movement_phase()
       break;
 
 
-
+//Run
 
     case 8:
-
-      moving_alone_wall(10,90,0,1,0);
+      sonar_reading = HC_SR04_range();
+      //left side PID values
+      Kp_IR_abs = 20;
+      Ki_IR_abs = 0;
+      Kp_IR_dif = 20;
+      Ki_IR_dif = 0;
+      while(HC_SR04_range() > 10) //execute until it is 10cm away from wall
+      {
+        sonar_reading = HC_SR04_range();
+        moving_alone_wall(90,1,0, Kp_IR_abs, Ki_IR_abs, Kp_IR_dif,Ki_IR_dif);
+        ReadAllSensor();
+      }
+      stop();
+      delay(100);
       movement_phase++;
 
       // while(1)
@@ -155,7 +192,20 @@ void execute_movement_phase()
       break;
     case 18:
       // Serial1.println(movement_phase);
-      moving_alone_wall(10,90,0,1,0);
+      sonar_reading = HC_SR04_range();
+      //left side PID values
+      Kp_IR_abs = 20;
+      Ki_IR_abs = 0;
+      Kp_IR_dif = 20;
+      Ki_IR_dif = 0;
+      while(HC_SR04_range() > 10) //execute until it is 10cm away from wall
+      {
+        sonar_reading = HC_SR04_range();
+        moving_alone_wall(90,1,0, Kp_IR_abs, Ki_IR_abs, Kp_IR_dif,Ki_IR_dif);
+        ReadAllSensor();
+      }
+      stop();
+      delay(100);
       movement_phase++;
       break;
 

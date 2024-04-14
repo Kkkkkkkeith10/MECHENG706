@@ -150,7 +150,7 @@ void driveStringhtForDistance(int cm)
 
   while (HC_SR04_range() > (currentDistance - cm))
   {
-    MoveStraightAlongAngle(0, 100);
+    MoveStraightAlongAngle(0, 100, 10);
   }
   movement_phase++;
   stop();
