@@ -99,6 +99,8 @@ void execute_movement_phase()
       Ki_IR_abs = 0;
       Kp_IR_dif = 20;
       Ki_IR_dif = 0;
+
+      PID_Zero();
       while(HC_SR04_range() > 10) //execute until it is 10cm away from wall
       {
         sonar_reading = HC_SR04_range();
@@ -117,14 +119,14 @@ void execute_movement_phase()
       break;
     case 10:
       sonar_reading = HC_SR04_range();
-      resetGyro();
+      // resetGyro();
       //left side PID values
-      Kp_IR_abs = 20;
-      Ki_IR_abs = 0;
-      Kp_IR_dif = 1;
-      Ki_IR_dif = 0.8;
-      Kp_GV_dif = 10;
-      Ki_GV_dif = 1;
+      Kp_IR_abs = 5;
+      Ki_IR_abs = 0.1;
+      Kp_IR_dif = 0;
+      Ki_IR_dif = 0;
+      Kp_GV_dif = 1;
+      Ki_GV_dif = 0;
 
       PID_Zero();
       while(HC_SR04_range() < 160) //execute until it is 10cm away from wall
@@ -144,20 +146,22 @@ void execute_movement_phase()
       break;
     case 11:
       strafe_left();
-      delay(300);
+      delay(500);
       stop();
       movement_phase++;
       break;
     case 12:
       sonar_reading = HC_SR04_range();
-      resetGyro();
+      // resetGyro();
       //left side PID values
-      Kp_IR_abs = 20;
-      Ki_IR_abs = 0;
-      Kp_IR_dif = 1;
-      Ki_IR_dif = 0.8;
-      Kp_GV_dif = 10;
-      Ki_GV_dif = 1;
+      Kp_IR_abs = 10;
+      Ki_IR_abs = 0.5;
+      Kp_IR_dif = 0;
+      Ki_IR_dif = 0;
+      Kp_GV_dif = 1;
+      Ki_GV_dif = 0;
+
+      PID_Zero();
       while(HC_SR04_range() > 10) //execute until it is 10cm away from wall
       {
         sonar_reading = HC_SR04_range();
@@ -179,18 +183,22 @@ void execute_movement_phase()
       GyroTurn(180);
       forward();
       delay(150);
+      resetGyro();
+      delay(200);
       stop();
       movement_phase++;
     case 15:
       sonar_reading = HC_SR04_range();
-      resetGyro();
+      // resetGyro();
       //left side PID values
-      Kp_IR_abs = 20;
-      Ki_IR_abs = 0;
-      Kp_IR_dif = 1;
-      Ki_IR_dif = 0.8;
-      Kp_GV_dif = 10;
-      Ki_GV_dif = 1;
+      Kp_IR_abs = 10;
+      Ki_IR_abs = 0.5;
+      Kp_IR_dif = 0;
+      Ki_IR_dif = 0;
+      Kp_GV_dif = 1;
+      Ki_GV_dif = 0;
+
+      PID_Zero();
       while(HC_SR04_range() > 10) //execute until it is 10cm away from wall
       {
         sonar_reading = HC_SR04_range();
@@ -209,22 +217,19 @@ void execute_movement_phase()
       break;
     case 17:
       sonar_reading = HC_SR04_range();
-      resetGyro();
       //left side PID values
-      Kp_IR_abs = 20;
+      Kp_IR_abs = 5;
       Ki_IR_abs = 0;
-      Kp_IR_dif = 1;
-      Ki_IR_dif = 0.8;
-      Kp_GV_dif = 10;
-      Ki_GV_dif = 1;
+      Kp_IR_dif = 0;
+      Ki_IR_dif = 0;
+      Kp_GV_dif = 0;
+      Ki_GV_dif = 0;
+
+      PID_Zero();
       while(HC_SR04_range() < 160) //execute until it is 10cm away from wall
       {
-        if (millis()- previous_sonar_read > 800)
-        {
-          sonar_reading = HC_SR04_range(); //sonar read
-          
-          previous_sonar_read = millis();
-        }
+        
+        sonar_reading = HC_SR04_range(); //sonar read
         moving_alone_wall_middle(-1,255,1,0, Kp_IR_abs, Ki_IR_abs, Kp_IR_dif,Ki_IR_dif,Kp_GV_dif, Ki_GV_dif);
         ReadAllSensor();
       }
@@ -240,6 +245,8 @@ void execute_movement_phase()
       Ki_IR_abs = 0;
       Kp_IR_dif = 20;
       Ki_IR_dif = 0;
+
+      PID_Zero();
       while(HC_SR04_range() > 10) //execute until it is 10cm away from wall
       {
         sonar_reading = HC_SR04_range();
