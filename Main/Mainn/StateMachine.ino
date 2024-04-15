@@ -38,7 +38,7 @@ void execute_movement_phase()
       movement_phase++;
       break;
     case 3:
-      moving_alone_wall(10,90,0,0,1);
+      moving_alone_wall(1,10,90,0,0,1);
       delay(100);
       movement_phase++;
       break;
@@ -53,7 +53,7 @@ void execute_movement_phase()
       //no movement_phase++;
       break;
     case 6:
-      moving_alone_wall(10,90,0,0,1);
+      moving_alone_wall(1,10,90,0,0,1);
       delay(100);
       movement_phase++;
       break;
@@ -68,8 +68,8 @@ void execute_movement_phase()
 
 
     case 8:
-
-      moving_alone_wall(10,90,0,1,0);
+      sonar_reading = HC_SR04_range(); //sonar read
+      moving_alone_wall(1,10,90,0,1,0);
       movement_phase++;
 
       // while(1)
@@ -146,6 +146,9 @@ void execute_movement_phase()
       movement_phase++;
     case 17:
       // Serial1.println(movement_phase);
+      strafe_left();
+      delay(400);
+      stop();
       GyroTurn(180);
       forward();
       delay(150);
@@ -156,7 +159,7 @@ void execute_movement_phase()
       delay(400); //allow robot to settle
       sonar_reading = HC_SR04_range(); //sonar read
       resetGyro();
-      moving_alone_wall_middle(10,390,1,0,1);
+      moving_alone_wall_middle(10,490,1,0,1);
       movement_phase++;
       break;
     case 19:
@@ -169,7 +172,7 @@ void execute_movement_phase()
       delay(400); //allow robot to settle
       sonar_reading = HC_SR04_range(); //sonar read
       resetGyro();
-      moving_alone_wall_middle(170,290,1,0,-1);
+      moving_alone_wall_middle(170,390,1,0,-1);
       movement_phase++;
       break;
     case 21:
@@ -182,7 +185,7 @@ void execute_movement_phase()
       delay(400); //allow robot to settle
       sonar_reading = HC_SR04_range(); //sonar read
       resetGyro();
-      moving_alone_wall_middle(10,190,1,0,1);
+      moving_alone_wall_middle(10,290,1,0,1);
       movement_phase++;
       break;
     case 23:
@@ -192,15 +195,16 @@ void execute_movement_phase()
       movement_phase++;
       break;
     case 24:
-      // delay(500); //allow robot to settle
-      // sonar_reading = HC_SR04_range(); //sonar read
-      // resetGyro();
-      // moving_alone_wall_middle(160,190,1,0,-1);
+      delay(500); //allow robot to settle
+      sonar_reading = HC_SR04_range(); //sonar read
+      resetGyro();
+      moving_alone_wall_middle(160,190,1,0,-1);
       movement_phase++;
       break;
     case 25:
       // Serial1.println(movement_phase);
-      moving_alone_wall(170,90,0,1,0,-1);
+      sonar_reading = HC_SR04_range(); //sonar read
+      moving_alone_wall(1,10,90,0,1,0);
       movement_phase++;
       break;
 

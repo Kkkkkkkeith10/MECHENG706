@@ -114,7 +114,7 @@ void moving_alone_wall(int go_reverse, float target_distance_Sonar, float target
     if(using_gyro){}
 
     SVRF = saturation(500*go_reverse + temp_SV_dif  + temp_SV_abs*abs_move_C);
-    SVRR = saturation(500*go_revese + temp_SV_dif  - temp_SV_abs*abs_move_C);
+    SVRR = saturation(500*go_reverse + temp_SV_dif  - temp_SV_abs*abs_move_C);
     SVLF = saturation(-500*go_reverse + temp_SV_dif  + temp_SV_abs*abs_move_C);
     SVLR = saturation(-500*go_reverse + temp_SV_dif  - temp_SV_abs*abs_move_C);
 
