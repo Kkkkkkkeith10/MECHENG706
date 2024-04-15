@@ -104,7 +104,7 @@ double currentAngle = 0; // current angle calculated by angular velocity integra
 float GyroTimeNow = 0;
 float GyroTimePrevious = 0;
 
-int movement_phase = 10; //use for flow control of the robots programmed movement
+int movement_phase = 8; //use for flow control of the robots programmed movement
 int currentState = 0;
 
 //IR Readings

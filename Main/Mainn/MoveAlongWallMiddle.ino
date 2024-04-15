@@ -3,6 +3,24 @@
 // float VALUE_4103 = 0.0;
 // float VALUE_2Y02 = 0.0;
 
+  int temp_SV_abs = 0;
+  int temp_SV_dif = 0;
+  int abs_move_C = 0;
+  int temp_GV_dif = 0;
+
+
+  static float temp_IR_distance_abs = 0.0;
+  //float temp_IR_distance_abs_prev = 0.0;
+  static float temp_IR_distance_error_abs = 0.0;
+  static float cumm_IR_distance_error_abs = 0.0;
+
+  static float temp_IR_distance_dif = 0.0;
+  //float temp_IR_distance_dif_prev = 0.0;
+  float cumm_IR_distance_dif = 0.0;
+
+  float angle_error = 0;
+  static float angle_error_cumm = 0;
+
 void moving_alone_wall_middle(int go_reverse, float target_distance_IR, bool use_left_side_IRs, bool use_right_side_IRs,float Kp_IR_abs,float Ki_IR_abs,float Kp_IR_dif,float Ki_IR_dif,float Kp_GV_dif,
 float Ki_GV_dif)
 {
@@ -14,51 +32,13 @@ float Ki_GV_dif)
   //%%%%This function using global sensor readings%%%%
   //Pass -1 for reverse and 1 for forward
 
-  resetGyro();
-
-  float time_curr = (float)millis()/1000;
-  float time_prev = time_curr;
-  float time_delta = time_curr - time_prev;
-
-  int temp_SV_abs = 0;
-  int temp_SV_dif = 0;
-  int abs_move_C = 0;
-
-  int temp_GV_dif = 0;
-
-
-  float temp_IR_distance_abs = 0.0;
-  //float temp_IR_distance_abs_prev = 0.0;
-  float temp_IR_distance_error_abs = 0.0;
-  float cumm_IR_distance_error_abs = 0.0;
-
-  float temp_IR_distance_dif = 0.0;
-  //float temp_IR_distance_dif_prev = 0.0;
-  float cumm_IR_distance_dif = 0.0;
-
-  float angle_error = 0;
-  static float angle_error_cumm = 0;
-
-
-  //for using both
-  float temp_IR_distance_abs_right;
-  float temp_IR_distance_abs_left;
-  float cumm_IR_distance_abs_right;
-  float cumm_IR_distance_abs_left;
-  float temp_IR_distance_error_abs_right;
-  float temp_IR_distance_error_abs_left;
-  float cumm_IR_distance_error_abs_right;
-  float cumm_IR_distance_error_abs_left;
-
-  float target_distance_IR_right;
-  float target_distance_IR_left;
 
 
     // Serial1.print(sonar_reading);
     // Serial1.print(" ");
-    time_prev = time_curr;
-    time_curr = (float)millis()/1000;
-    time_delta = time_curr - time_prev;
+    static float time_curr = (float)millis()/1000;
+    static float time_prev = time_curr;
+    static float time_delta = time_curr - time_prev;
 
     if(use_left_side_IRs)
     {
@@ -151,4 +131,27 @@ float Ki_GV_dif)
     left_rear_motor.writeMicroseconds(1500 + SVLR);
     right_rear_motor.writeMicroseconds(1500 + SVRR);
     right_font_motor.writeMicroseconds(1500 + SVRF);
+}
+
+void PID_Zero()
+{
+    int temp_SV_abs = 0;
+  int temp_SV_dif = 0;
+  int abs_move_C = 0;
+  int temp_GV_dif = 0;
+
+
+  static float temp_IR_distance_abs = 0.0;
+  //float temp_IR_distance_abs_prev = 0.0;
+  static float temp_IR_distance_error_abs = 0.0;
+  static float cumm_IR_distance_error_abs = 0.0;
+
+  static float temp_IR_distance_dif = 0.0;
+  //float temp_IR_distance_dif_prev = 0.0;
+  float cumm_IR_distance_dif = 0.0;
+
+  float angle_error = 0;
+  static float angle_error_cumm = 0;
+
+  return;
 }
