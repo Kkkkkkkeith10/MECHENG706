@@ -3,7 +3,7 @@
 // float VALUE_4103 = 0.0;
 // float VALUE_2Y02 = 0.0;
 
-void moving_alone_wall(float target_distance_Sonar, float target_distance_IR, bool using_gyro, bool use_left_side_IRs, bool use_right_side_IRs)
+void moving_alone_wall(int go_reverse, float target_distance_Sonar, float target_distance_IR, bool using_gyro, bool use_left_side_IRs, bool use_right_side_IRs)
 {
   //This function mainly using two IR sensors to making the robot moving parallal with the wall.
   //use left or right side IRs to make the system parallel to the wall, only one side can be used at a sigle call
@@ -61,7 +61,7 @@ void moving_alone_wall(float target_distance_Sonar, float target_distance_IR, bo
   }
 
 
-  while(HC_SR04_range() > target_distance_Sonar)
+  while(((sonar_reading > target_distance_Sonar) & (go_reverse == 1)) |((sonar_reading < target_distance_Sonar) & (go_reverse == -1)))
   {
     time_prev = time_curr;
     time_curr = (float)millis()/1000;
@@ -113,10 +113,10 @@ void moving_alone_wall(float target_distance_Sonar, float target_distance_IR, bo
 
     if(using_gyro){}
 
-    SVRF = saturation(500 + temp_SV_dif  + temp_SV_abs*abs_move_C);
-    SVRR = saturation(500 + temp_SV_dif  - temp_SV_abs*abs_move_C);
-    SVLF = saturation(-500 + temp_SV_dif  + temp_SV_abs*abs_move_C);
-    SVLR = saturation(-500 + temp_SV_dif  - temp_SV_abs*abs_move_C);
+    SVRF = saturation(500*go_reverse + temp_SV_dif  + temp_SV_abs*abs_move_C);
+    SVRR = saturation(500*go_revese + temp_SV_dif  - temp_SV_abs*abs_move_C);
+    SVLF = saturation(-500*go_reverse + temp_SV_dif  + temp_SV_abs*abs_move_C);
+    SVLR = saturation(-500*go_reverse + temp_SV_dif  - temp_SV_abs*abs_move_C);
 
     // Serial1.print(VALUE_2Y04);
     // Serial1.print(" ");
