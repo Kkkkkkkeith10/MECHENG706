@@ -62,7 +62,7 @@ float Ki_GV_dif)
 
     if(use_left_side_IRs)
     {
-      //disregard large changes in measurements
+      // disregard large changes in measurements
       if ((target_distance_IR - IR_sensorReadDistance("2Y04") >80) | (target_distance_IR - IR_sensorReadDistance("2Y04") < -80))
       {
         //do nothing
@@ -75,6 +75,9 @@ float Ki_GV_dif)
         // Serial1.print(" ");
         // Serial1.println(PREVIOUS_2Y04_VALUE);
       }
+
+        //       PREVIOUS_2Y04_VALUE = VALUE_2Y04;
+        // VALUE_2Y04 = IR_sensorReadDistance("2Y_04");
 
       //temp_IR_distance_abs_prev = temp_IR_distance_abs;
       temp_IR_distance_abs = (VALUE_2Y04 + PREVIOUS_2Y04_VALUE)/2;
@@ -106,6 +109,8 @@ float Ki_GV_dif)
         // Serial1.println(PREVIOUS_2Y02_VALUE); 
       }
 
+        // PREVIOUS_2Y02_VALUE = VALUE_2Y02;
+        // VALUE_2Y02 = IR_sensorReadDistance("2Y_02");
 
       //temp_IR_distance_abs_prev = temp_IR_distance_abs;
       temp_IR_distance_abs = (PREVIOUS_2Y02_VALUE + VALUE_2Y02)/2;

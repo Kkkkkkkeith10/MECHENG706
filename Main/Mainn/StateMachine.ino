@@ -127,14 +127,14 @@ void execute_movement_phase()
       Ki_GV_dif = 1;
       while(HC_SR04_range() < 160) //execute until it is 10cm away from wall
       {
+
+        moving_alone_wall_middle(-1,255,1,0, Kp_IR_abs, Ki_IR_abs, Kp_IR_dif,Ki_IR_dif,Kp_GV_dif, Ki_GV_dif);
+        ReadAllSensor();
         if (millis()- previous_sonar_read > 800)
         {
           sonar_reading = HC_SR04_range(); //sonar read
-          
           previous_sonar_read = millis();
         }
-        moving_alone_wall_middle(-1,255,1,0, Kp_IR_abs, Ki_IR_abs, Kp_IR_dif,Ki_IR_dif,Kp_GV_dif, Ki_GV_dif);
-        ReadAllSensor();
       }
       stop();
       delay(100);
