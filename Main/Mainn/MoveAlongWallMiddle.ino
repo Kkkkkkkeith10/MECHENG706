@@ -3,7 +3,8 @@
 // float VALUE_4103 = 0.0;
 // float VALUE_2Y02 = 0.0;
 
-void moving_alone_wall_middle(float target_distance_Sonar, float target_distance_IR, bool use_left_side_IRs, bool use_right_side_IRs, int go_reverse)
+void moving_alone_wall_middle(int go_reverse, float target_distance_IR, bool use_left_side_IRs, bool use_right_side_IRs,float Kp_IR_abs,float Ki_IR_abs,float Kp_IR_dif,float Ki_IR_dif,float Kp_GV_dif,
+float Ki_GV_dif)
 {
   //This function mainly using two IR sensors to making the robot moving parallal with the wall.
   //use left or right side IRs to make the system parallel to the wall, only one side can be used at a sigle call
@@ -25,11 +26,6 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
 
   int temp_GV_dif = 0;
 
-  // float Kp_IR_abs = 15;
-  // float Ki_IR_abs = 1;
-  // float Kp_IR_dif = 10;
-  // float Ki_IR_dif = 1;
-  // float threathod_IR = 50;
 
   float temp_IR_distance_abs = 0.0;
   //float temp_IR_distance_abs_prev = 0.0;
@@ -57,62 +53,7 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
   float target_distance_IR_right;
   float target_distance_IR_left;
 
-  
-  if(use_left_side_IRs) 
-  {
-    Kp_IR_abs = 20;
-    Ki_IR_abs = 0;
-    Kp_IR_dif = 1;
-    Ki_IR_dif = 0.8;
 
-    Kp_GV_dif = 10;
-    Ki_GV_dif = 1;
-
-
-
-    // float VALUE_2Y04 = find_average_IR("2Y_04");
-    // float VALUE_4102 = find_average_IR("41_02");
-    // temp_IR_distance_abs_prev = (VALUE_2Y04 + VALUE_4102)/2;
-    // temp_IR_distance_dif_prev = (VALUE_2Y04 - VALUE_4102);
-  }
-  else if (use_right_side_IRs)
-  { 
-    Kp_IR_abs = 20;
-    Ki_IR_abs = 0;
-    Kp_IR_dif = 1;
-    Ki_IR_dif = 0.8;
-
-    Kp_GV_dif = 10;
-    Ki_GV_dif = 1;
-
-    // float VALUE_4103 = find_average_IR("41_03");
-    // float VALUE_2Y02 = find_average_IR("2Y_02");
-    // temp_IR_distance_abs_prev = (VALUE_4103 + VALUE_2Y02)/2;
-    // temp_IR_distance_dif_prev = (VALUE_4103 - VALUE_2Y02);
-  }
-  else if (use_right_side_IRs && use_left_side_IRs)
-  {
-      float averages_sum_left = 0;
-      float averages_sum_right = 0;
-      for (int i = 0; i < 10; i++)
-      {
-        averages_sum_left += find_average_IR("2Y_02");
-        averages_sum_right += find_average_IR("2Y_04");
-      }
-      float target_distance_IR_right = averages_sum_right /10;
-      float target_distance_IR_left = averages_sum_left /10;
-  }
-
-  static unsigned long previous_sonar_read = 0;
-  while(((sonar_reading > target_distance_Sonar) & (go_reverse == 1)) |((sonar_reading < target_distance_Sonar) & (go_reverse == -1)))
-  {
-
-    if (millis()- previous_sonar_read > 800)
-    {
-      sonar_reading = HC_SR04_range(); //sonar read
-      
-      previous_sonar_read = millis();
-    }
     // Serial1.print(sonar_reading);
     // Serial1.print(" ");
     time_prev = time_curr;
@@ -181,32 +122,6 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
 
       temp_SV_dif = (int)(Kp_IR_dif*temp_IR_distance_dif + Ki_IR_dif*cumm_IR_distance_dif);
     }
-    else if (use_right_side_IRs & use_left_side_IRs)
-    {
-
-      PREVIOUS_2Y04_VALUE = VALUE_2Y04;
-      VALUE_2Y04 = find_average_IR("2Y_04");
-      PREVIOUS_2Y02_VALUE = VALUE_2Y02;
-      VALUE_2Y02 = find_average_IR("2Y_02");
-      //temp_IR_distance_abs_prev = temp_IR_distance_abs;
-      temp_IR_distance_abs_right = (PREVIOUS_2Y02_VALUE + VALUE_2Y02)/2;
-      temp_IR_distance_error_abs_right = target_distance_IR_right - temp_IR_distance_abs_right;
-      cumm_IR_distance_error_abs_right = cumm_IR_distance_error_abs_right + temp_IR_distance_error_abs_right*time_delta;
-
-      temp_IR_distance_abs_left = (PREVIOUS_2Y04_VALUE + VALUE_2Y04)/2;
-      temp_IR_distance_error_abs_left = target_distance_IR_left - temp_IR_distance_abs_left;
-      cumm_IR_distance_error_abs_left = cumm_IR_distance_error_abs_left + temp_IR_distance_error_abs_left*time_delta;
-
-      // //temp_IR_distance_dif_prev = temp_IR_distance_dif;
-      // temp_IR_distance_dif = (PREVIOUS_2Y02_VALUE - VALUE_2Y02);
-      // cumm_IR_distance_dif = cumm_IR_distance_dif + temp_IR_distance_dif*time_delta;
-
-
-      temp_SV_abs = (int)(Kp_IR_abs*(temp_IR_distance_error_abs_right+temp_IR_distance_error_abs_left) + Ki_IR_abs*(cumm_IR_distance_error_abs_right+cumm_IR_distance_error_abs_left));
-      abs_move_C = 1;
-
-      // temp_SV_dif = (int)(Kp_IR_dif*temp_IR_distance_dif + Ki_IR_dif*cumm_IR_distance_dif);
-    }
 
     readGyro1();
     angle_error = 0 - currentAngle;
@@ -227,49 +142,8 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
     SVLF = saturation(-500*go_reverse   + temp_SV_abs*abs_move_C - temp_GV_dif + temp_SV_dif);
     SVLR = saturation(-500*go_reverse   - temp_SV_abs*abs_move_C - temp_GV_dif + temp_SV_dif);
 
-    // SVRF = saturation(500*go_reverse   + temp_SV_abs*abs_move_C - temp_GV_dif);
-    // SVRR = saturation(500*go_reverse   - temp_SV_abs*abs_move_C - temp_GV_dif);
-    // SVLF = saturation(-500*go_reverse   + temp_SV_abs*abs_move_C - temp_GV_dif);
-    // SVLR = saturation(-500*go_reverse   - temp_SV_abs*abs_move_C - temp_GV_dif);
-
-    // Serial1.print(VALUE_2Y04);
-    // Serial1.print(" ");
-    // Serial1.print(VALUE_4102);
-    // Serial1.println();
-    // Serial.print(temp_SV);
-    // Serial.print(" ");
-    // Serial.println(Crab_move_C);
-    // Serial.print(" ");
-    // Serial.print(VALUE_2Y04);
-    // Serial.print(" ");
-    // Serial.print(temp_SV);
-    // Serial.print(" ");
-    // Serial.print(temp_SV);
-    // Serial.print(" ");
-    // Serial.print(temp_SV);
-    // Serial.print(" ");
-    // Serial.print(ErrorAngle_Degree);
-    // Serial.print(" ");
-    // Serial.print(SV_P);
-    // Serial.print(" ");
-    // Serial.print(1500 + SVRR);
-    // Serial.print(" ");
-    // Serial.print(1500 + SVRF);
-    // Serial.print(" ");
-    // Serial.print(1500 + SVLF);
-    // Serial.print(" ");
-    // Serial.println(1500 + SVLR);
-    // Serial.println();
-
     left_font_motor.writeMicroseconds(1500 + SVLF);
     left_rear_motor.writeMicroseconds(1500 + SVLR);
     right_rear_motor.writeMicroseconds(1500 + SVRR);
     right_font_motor.writeMicroseconds(1500 + SVRF);
-        ReadAllSensor();
-
-    //ccw == all (-)
-    //cw === all (+)
-    delay(100);
-    stop();
-  }
 }

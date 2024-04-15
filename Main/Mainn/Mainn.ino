@@ -104,7 +104,7 @@ double currentAngle = 0; // current angle calculated by angular velocity integra
 float GyroTimeNow = 0;
 float GyroTimePrevious = 0;
 
-int movement_phase = 0; //use for flow control of the robots programmed movement
+int movement_phase = 10; //use for flow control of the robots programmed movement
 int currentState = 0;
 
 //IR Readings
@@ -123,6 +123,8 @@ float sonar_reading_prev5 = 0;
 
 float sonar_average = 0;
 float sonar_average_prev1 = 0;
+
+unsigned long previous_sonar_read = 0;
 
 //move along wall variables
 float Kp_IR_abs = 0;
