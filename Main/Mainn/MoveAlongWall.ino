@@ -3,7 +3,7 @@
 // float VALUE_4103 = 0.0;
 // float VALUE_2Y02 = 0.0;
 
-void moving_alone_wall(float target_distance_IR, bool use_left_side_IRs, bool use_right_side_IRs,  float Kp_IR_abs,float Ki_IR_abs,float Kp_IR_dif,float Ki_IR_dif)
+void moving_alone_wall(int go_reverse, float target_distance_IR, bool use_left_side_IRs, bool use_right_side_IRs,  float Kp_IR_abs,float Ki_IR_abs,float Kp_IR_dif,float Ki_IR_dif)
 {
   //This function mainly using two IR sensors to making the robot moving parallal with the wall.
   //use left or right side IRs to make the system parallel to the wall, only one side can be used at a sigle call
@@ -76,10 +76,10 @@ void moving_alone_wall(float target_distance_IR, bool use_left_side_IRs, bool us
   {
   }
 
-  SVRF = saturation(500 + temp_SV_dif  + temp_SV_abs*abs_move_C);
-  SVRR = saturation(500 + temp_SV_dif  - temp_SV_abs*abs_move_C);
-  SVLF = saturation(-500 + temp_SV_dif  + temp_SV_abs*abs_move_C);
-  SVLR = saturation(-500 + temp_SV_dif  - temp_SV_abs*abs_move_C);
+  SVRF = saturation(500*go_reverse + temp_SV_dif  + temp_SV_abs*abs_move_C);
+  SVRR = saturation(500*go_reverse + temp_SV_dif  - temp_SV_abs*abs_move_C);
+  SVLF = saturation(-500*go_reverse + temp_SV_dif  + temp_SV_abs*abs_move_C);
+  SVLR = saturation(-500*go_reverse + temp_SV_dif  - temp_SV_abs*abs_move_C);
 
   left_font_motor.writeMicroseconds(1500 + SVLF);
   left_rear_motor.writeMicroseconds(1500 + SVLR);
