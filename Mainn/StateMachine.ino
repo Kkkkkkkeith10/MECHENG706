@@ -192,7 +192,7 @@ void execute_movement_phase()
       delay(400); //allow robot to settle
       sonar_reading = HC_SR04_range(); //sonar read
       resetGyro();
-      moving_alone_wall_middle(170,390,1,0,-1);
+      moving_alone_wall_middle(160,390,1,0,-1);
       movement_phase++;
       break;
     case 23:
