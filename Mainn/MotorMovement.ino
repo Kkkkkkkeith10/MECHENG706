@@ -62,20 +62,20 @@ void cw()
   right_font_motor.writeMicroseconds(1500 + speed_val);
 }
 
-void strafe_left()
+void strafe_left(int power)
 {
-  left_font_motor.writeMicroseconds(1500 - speed_val);
-  left_rear_motor.writeMicroseconds(1500 + speed_val);
-  right_rear_motor.writeMicroseconds(1500 + speed_val);
-  right_font_motor.writeMicroseconds(1500 - speed_val);
+  left_font_motor.writeMicroseconds(1500 - power);
+  left_rear_motor.writeMicroseconds(1500 + power);
+  right_rear_motor.writeMicroseconds(1500 + power);
+  right_font_motor.writeMicroseconds(1500 - power);
 }
 
-void strafe_right()
+void strafe_right(int power)
 {
-  left_font_motor.writeMicroseconds(1500 + speed_val);
-  left_rear_motor.writeMicroseconds(1500 - speed_val);
-  right_rear_motor.writeMicroseconds(1500 - speed_val);
-  right_font_motor.writeMicroseconds(1500 + speed_val);
+  left_font_motor.writeMicroseconds(1500 + power);
+  left_rear_motor.writeMicroseconds(1500 - power);
+  right_rear_motor.writeMicroseconds(1500 - power);
+  right_font_motor.writeMicroseconds(1500 + power);
 }
 
 

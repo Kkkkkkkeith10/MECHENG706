@@ -19,9 +19,9 @@ void checkForLongSide()
   average /= 100.0;  // Convert cm to meters
 
   // Update currentStats based on the average distance
-  if (average < 1.4) {
-      movement_phase += 2;
+  if (average < 1.2) {
+      movement_phase = 6;
   } else {
-      movement_phase += 1;
+      movement_phase = 7;
   }
 }

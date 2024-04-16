@@ -15,7 +15,7 @@ void GyroTurn(double target)
   static char msg;
   static double speed_value;
   static unsigned long start_turn;
-  static double tolerance = 1;
+  static double tolerance = 5;
   static double error = 0 ;
   static double cumm_error = 0;
 
