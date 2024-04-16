@@ -209,7 +209,7 @@ void execute_movement_phase()
     case 25:
       // Serial1.println(movement_phase);
       sonar_reading = HC_SR04_range(); //sonar read
-      moving_alone_wall(10,110,0,1,0,1);
+      moving_alone_wall(10,100,0,1,0,1);
       movement_phase++;
       break;
 

@@ -5,6 +5,7 @@
 
 void moving_alone_wall_middle(float target_distance_Sonar, float target_distance_IR, bool use_left_side_IRs, bool use_right_side_IRs, int go_reverse)
 {
+
   //This function mainly using two IR sensors to making the robot moving parallal with the wall.
   //use left or right side IRs to make the system parallel to the wall, only one side can be used at a sigle call
   //IR sensors groups are:     use_left_side_IRs: 41_02 & 2Y_04         use_right_side_IRs: 41_03 & 2Y_02
@@ -12,8 +13,6 @@ void moving_alone_wall_middle(float target_distance_Sonar, float target_distance
   //The input is the target distance between the robot and the wall
   //%%%%This function using global sensor readings%%%%
   //Pass -1 for reverse and 1 for forward
-
-  resetGyro();
 
   float time_curr = (float)millis()/1000;
   float time_prev = time_curr;

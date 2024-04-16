@@ -181,7 +181,7 @@ void setup(void)
 
   //bluetooth on
   //Serial1.begin(115200);
-  Serial.begin(115200);
+  Serial1.begin(115200);
 
   // setting up gyro
   pinMode(sensorPin, INPUT);
